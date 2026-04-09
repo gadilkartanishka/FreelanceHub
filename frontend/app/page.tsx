@@ -30,22 +30,50 @@ const heroItem = {
 const featureRows = [
   {
     icon: UserRound,
-    title: "Clients stay organized from day one",
+    title: "Every client has a clearer home",
     description:
-      "Keep contact details, project notes, and working history together so every relationship feels easier to manage.",
+      "Store key details, notes, and shared context in one place so client work feels easier to pick up and continue.",
   },
   {
     icon: Hourglass,
-    title: "Projects and deadlines stay visible",
+    title: "Your weekly priorities stay in view",
     description:
-      "See what is active, what is coming up next, and where attention is needed before a timeline starts slipping.",
+      "See what needs attention now, what is coming up next, and where timelines may need a closer look.",
   },
   {
     icon: MessagesSquare,
-    title: "Payments and conversations stay connected",
+    title: "Admin work stops breaking your flow",
     description:
-      "Track invoice status and client chat in the same workspace, so follow-ups happen with full context.",
+      "Handle follow-ups, status checks, and conversations in the same place instead of chasing updates across tools.",
   },
+]
+
+const workflowSteps = [
+  {
+    number: "01",
+    title: "Set up the work clearly",
+    description:
+      "Create a shared starting point for each engagement so the important details are easy to find from the beginning.",
+  },
+  {
+    number: "02",
+    title: "Keep momentum through delivery",
+    description:
+      "Use one workspace to stay oriented while projects move, priorities shift, and deadlines get closer.",
+  },
+  {
+    number: "03",
+    title: "Wrap up without loose ends",
+    description:
+      "Close the loop with communication and payment follow-ups while the project context is still right in front of you.",
+  },
+]
+
+const stats = [
+  { value: "120+", label: "Freelancers onboarded" },
+  { value: "3.5k+", label: "Projects organized" },
+  { value: "96%", label: "Tasks delivered on time" },
+  { value: "$480k+", label: "Payments tracked" },
 ]
 
 export default function Page() {
@@ -73,15 +101,15 @@ export default function Page() {
                 variants={heroItem}
                 className="mt-6 max-w-4xl text-5xl leading-[0.95] font-medium tracking-tight text-white sm:text-6xl lg:text-7xl"
               >
-                One place to manage clients, projects, payments, and conversations.
+                Run the business side of freelance work with more clarity.
               </motion.h1>
 
               <motion.p
                 variants={heroItem}
                 className="mt-6 max-w-2xl text-lg leading-8 text-[rgba(242,233,228,0.84)]"
               >
-                FreelanceHub helps freelancers run the business side of their work with more
-                clarity, less context switching, and a calmer daily workflow.
+                FreelanceHub gives you a calmer workspace for the moving parts behind every
+                project, from first conversations to final follow-ups.
               </motion.p>
 
               <motion.div variants={heroItem} className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -122,11 +150,11 @@ export default function Page() {
                 Features
               </p>
               <h2 className="mt-4 text-4xl leading-tight font-medium sm:text-5xl">
-                Built for freelancers who want one calm system instead of five separate tools.
+                The essentials you need, without the usual tool sprawl.
               </h2>
               <p className="mt-6 text-lg leading-8 text-[rgba(34,34,59,0.74)]">
-                FreelanceHub keeps the business side of freelance work simple, visible, and easy
-                to follow every day.
+                Each part of the platform is meant to reduce friction, so staying organized takes
+                less energy out of your day.
               </p>
             </div>
 
@@ -170,6 +198,63 @@ export default function Page() {
                 </div>
                 <div className="h-px w-full bg-[linear-gradient(90deg,rgba(74,78,105,0.16),transparent)] sm:hidden" />
               </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden bg-[rgba(242,233,228,0.66)]">
+        <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(74,78,105,0.16),transparent)]" />
+
+        <div className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:px-12 lg:py-24">
+          <div className="max-w-3xl">
+            <p className="text-sm tracking-[0.22em] text-[var(--color-indigo)] uppercase">
+              How it works
+            </p>
+            <h2 className="mt-4 text-4xl leading-tight font-medium sm:text-5xl">
+              A simple rhythm from kickoff to closeout.
+            </h2>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-[rgba(34,34,59,0.74)]">
+              Instead of rebuilding your process in separate apps, you move through the work in
+              one consistent flow.
+            </p>
+          </div>
+
+          <div className="mt-14">
+            {workflowSteps.map(({ number, title, description }) => (
+              <article
+                key={number}
+                className="grid gap-6 border-t border-[rgba(74,78,105,0.14)] py-8 first:border-t-0 first:pt-0 lg:grid-cols-[180px_minmax(0,1fr)] lg:gap-10 lg:py-10"
+              >
+                <div className="text-5xl leading-none font-medium tracking-[-0.04em] text-[rgba(74,78,105,0.72)] sm:text-6xl">
+                  {number}
+                </div>
+                <div className="max-w-3xl">
+                  <h3 className="text-2xl font-medium sm:text-3xl">{title}</h3>
+                  <p className="mt-4 text-base leading-8 text-[rgba(34,34,59,0.74)] sm:text-lg">
+                    {description}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden bg-[var(--color-navy)] text-[var(--color-cream)]">
+        <div className="absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(242,233,228,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(242,233,228,0.05)_1px,transparent_1px)] [background-size:92px_92px]" />
+        <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(242,233,228,0.12),transparent)]" />
+        <div className="absolute inset-x-0 bottom-0 h-px bg-[linear-gradient(90deg,transparent,rgba(242,233,228,0.12),transparent)]" />
+
+        <div className="relative mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:px-12 lg:py-24">
+          <div className="grid gap-10 sm:grid-cols-2 xl:grid-cols-4">
+            {stats.map(({ value, label }) => (
+              <div key={label} className="text-center xl:text-left">
+                <div className="text-5xl leading-none font-medium tracking-[-0.05em] text-[var(--color-rose)] sm:text-6xl">
+                  {value}
+                </div>
+                <p className="mt-5 text-base text-[rgba(242,233,228,0.66)]">{label}</p>
+              </div>
             ))}
           </div>
         </div>
