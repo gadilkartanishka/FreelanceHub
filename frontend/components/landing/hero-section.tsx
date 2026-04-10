@@ -1,5 +1,6 @@
 "use client"
-
+// Add this import at the top
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ShaderBackground } from "@/components/ui/shaders-hero-section"
 import { heroContainer, heroItem } from "@/components/landing/data"
@@ -37,18 +38,24 @@ export function HeroSection() {
               variants={heroItem}
               className="mt-6 max-w-2xl text-lg leading-8 text-[rgba(242,233,228,0.84)]"
             >
-              FreelanceHub gives you a calmer workspace for the moving parts behind every project,
-              from first conversations to final follow-ups.
+              FreelanceHub gives you a calmer workspace for the moving parts
+              behind every project, from first conversations to final
+              follow-ups.
             </motion.p>
 
-            <motion.div variants={heroItem} className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button
-                size="lg"
-                className="h-12 rounded-full bg-[var(--color-cream)] px-6 text-[var(--color-navy)] hover:bg-white"
-              >
-                Start managing smarter
-                <ArrowRight className="size-4" />
-              </Button>
+            <motion.div
+              variants={heroItem}
+              className="mt-8 flex flex-col gap-4 sm:flex-row"
+            >
+              <Link href="/dashboard">
+                <Button
+                  size="lg"
+                  className="h-12 rounded-full bg-[var(--color-cream)] px-6 text-[var(--color-navy)] hover:bg-white"
+                >
+                  Start managing smarter
+                  <ArrowRight className="size-4" />
+                </Button>
+              </Link>
 
               <Button
                 variant="outline"
