@@ -1,6 +1,7 @@
 "use client"
 // Add this import at the top
 import Link from "next/link"
+import { Navbar } from "@/components/landing/navbar"
 import { Button } from "@/components/ui/button"
 import { ShaderBackground } from "@/components/ui/shaders-hero-section"
 import { heroContainer, heroItem } from "@/components/landing/data"
@@ -10,6 +11,7 @@ import { ArrowRight } from "lucide-react"
 export function HeroSection() {
   return (
     <ShaderBackground>
+      <Navbar />
       <section className="relative isolate overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(34,34,59,0.18),rgba(34,34,59,0.56))]" />
 
@@ -56,14 +58,6 @@ export function HeroSection() {
                   <ArrowRight className="size-4" />
                 </Button>
               </Link>
-
-              <Button
-                variant="outline"
-                size="lg"
-                className="h-12 rounded-full border-white/20 bg-white/8 px-6 text-white hover:bg-white/14 hover:text-white"
-              >
-                Explore the workflow
-              </Button>
             </motion.div>
           </motion.div>
         </div>
