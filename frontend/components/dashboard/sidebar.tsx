@@ -13,6 +13,7 @@ import {
   ChevronRight,
 } from "lucide-react"
 import { colors } from "@/lib/colors"
+import { Logo } from "@/components/ui/logo"
 
 const NAV = [
   { href: "/dashboard", label: "Overview", Icon: LayoutDashboard },
@@ -37,8 +38,8 @@ export function Sidebar({
   return (
     <aside
       style={{
-        width: collapsed ? 52 : 196,
-        minWidth: collapsed ? 52 : 196,
+        width: collapsed ? 52 : 240,
+        minWidth: collapsed ? 52 : 240,
         background: "#fff",
         borderRight: BORDER,
         display: "flex",
@@ -52,24 +53,19 @@ export function Sidebar({
       <div
         style={{
           height: 52,
-          padding: collapsed ? "0" : "0 16px",
+          padding: "0 16px",
           borderBottom: BORDER,
           display: "flex",
           alignItems: "center",
-          justifyContent: collapsed ? "center" : "space-between",
+          justifyContent: collapsed ? "center" : "flex-start",
+          width: "100%",
         }}
       >
-        {!collapsed && (
+        {collapsed ? (
+          <Logo style={{ width: 20, height: 20, flexShrink: 0 }} />
+        ) : (
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div
-              style={{
-                width: 7,
-                height: 7,
-                borderRadius: "50%",
-                background: colors.rose,
-                flexShrink: 0,
-              }}
-            />
+            <Logo style={{ width: 20, height: 20, flexShrink: 0 }} />
             <span
               style={{
                 fontSize: 13,
@@ -83,25 +79,17 @@ export function Sidebar({
             </span>
           </div>
         )}
-        <button
-          onClick={onToggle}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            color: "#9A8C98",
-            display: "flex",
-            padding: 2,
-            borderRadius: 2,
-            flexShrink: 0,
-          }}
-        >
-          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-        </button>
       </div>
 
       {/* Nav */}
-      <nav style={{ flex: 1, padding: "8px 0" }}>
+      <nav
+        style={{
+          flex: 1,
+          padding: "8px 0",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         {NAV.map(({ href, label, Icon }) => {
           const active = pathname === href
           return (
@@ -158,6 +146,50 @@ export function Sidebar({
             </Link>
           )
         })}
+
+        {/* Collapse toggle */}
+        <button
+          onClick={onToggle}
+          style={{
+            marginTop: "auto",
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: collapsed ? "8px 0" : "8px 16px",
+            justifyContent: collapsed ? "center" : "flex-start",
+            background: "none",
+            border: "none",
+            borderTop: BORDER,
+            cursor: "pointer",
+            color: "#9A8C98",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = colors.navy
+            e.currentTarget.style.background = "#FAFAFA"
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "#9A8C98"
+            e.currentTarget.style.background = "transparent"
+          }}
+        >
+          {collapsed ? (
+            <ChevronRight size={14} />
+          ) : (
+            <>
+              <ChevronLeft size={14} />
+              <span
+                style={{
+                  fontSize: 12.5,
+                  fontFamily: "system-ui, sans-serif",
+                  color: "#9A8C98",
+                }}
+              >
+                Collapse
+              </span>
+            </>
+          )}
+        </button>
       </nav>
 
       {/* User */}

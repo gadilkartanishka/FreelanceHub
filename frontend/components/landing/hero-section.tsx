@@ -49,7 +49,7 @@ export function HeroSection() {
               variants={heroItem}
               className="mt-8 flex flex-col gap-4 sm:flex-row"
             >
-              <Link href="/dashboard">
+              <Link href="/login">
                 <Button
                   size="lg"
                   className="h-12 rounded-full bg-[var(--color-cream)] px-6 text-[var(--color-navy)] hover:bg-white"

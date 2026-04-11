@@ -1,4 +1,3 @@
-import { RightPanel } from "@/components/dashboard/right-panel"
 import { colors } from "@/lib/colors"
 import { Plus } from "lucide-react"
 
@@ -401,9 +400,6 @@ export default function OverviewPage() {
             </table>
           </div>
         </div>
-
-        {/* Right panel */}
-        <RightPanel />
       </div>
     </div>
   )
