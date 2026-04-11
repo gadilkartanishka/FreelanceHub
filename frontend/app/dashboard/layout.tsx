@@ -8,16 +8,28 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
 
   return (
     <div
-      className="flex h-screen overflow-hidden"
-      style={{ background: "var(--color-cream)", color: "var(--color-navy)" }}
+      style={{
+        display: "flex",
+        height: "100vh",
+        overflow: "hidden",
+        background: "#fff",
+        color: "#22223B",
+      }}
     >
       <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((p) => !p)} />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}
+      >
+        {children}
       </div>
     </div>
   )

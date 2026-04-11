@@ -1,458 +1,410 @@
-"use client"
-
-import { motion } from "framer-motion"
-import {
-  TrendingUp,
-  Clock,
-  DollarSign,
-  FolderKanban,
-  ArrowUpRight,
-  ArrowDownRight,
-  CheckCircle2,
-  Circle,
-  AlertCircle,
-} from "lucide-react"
+import { RightPanel } from "@/components/dashboard/right-panel"
 import { colors } from "@/lib/colors"
+import { Plus } from "lucide-react"
 
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.07 } },
-}
+const BORDER = "1px solid #E8E4E0"
+const BORDER_LIGHT = "1px solid #F5F2EF"
 
-const item = {
-  hidden: { opacity: 0, y: 16 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: "easeOut" as const },
-  },
-}
-
-const STATS = [
+const METRICS = [
   {
     label: "Revenue this month",
-    value: "$8,420",
-    change: "+12%",
-    up: true,
-    Icon: DollarSign,
-    accent: colors.indigo,
+    value: "$4,820",
+    sub: "↑ 18% vs March",
+    subColor: "#4A7C59",
   },
   {
-    label: "Active projects",
-    value: "6",
-    change: "+2 new",
-    up: true,
-    Icon: FolderKanban,
-    accent: colors.rose,
+    label: "Active clients",
+    value: "12",
+    sub: "↑ 2 this month",
+    subColor: "#4A7C59",
   },
   {
-    label: "Hours logged",
-    value: "94h",
-    change: "-8% vs last month",
-    up: false,
-    Icon: Clock,
-    accent: colors.mauve,
+    label: "Open projects",
+    value: "7",
+    sub: "3 due this week",
+    subColor: "#9A8C98",
   },
   {
-    label: "Avg. project value",
-    value: "$1,403",
-    change: "+5%",
-    up: true,
-    Icon: TrendingUp,
-    accent: colors.indigo,
+    label: "Unpaid invoices",
+    value: "$1,240",
+    sub: "2 overdue",
+    subColor: "#A0522D",
   },
 ]
+
+type Status =
+  | "progress"
+  | "track"
+  | "review"
+  | "risk"
+  | "paid"
+  | "pending"
+  | "overdue"
+
+const STATUS_STYLE: Record<
+  Status,
+  { bg: string; color: string; label: string }
+> = {
+  progress: { bg: "#FEF3E2", color: "#92400E", label: "In progress" },
+  track: { bg: "#ECFDF5", color: "#065F46", label: "On track" },
+  review: { bg: "#EFF6FF", color: "#1E40AF", label: "In review" },
+  risk: { bg: "#FEF2F2", color: "#991B1B", label: "At risk" },
+  paid: { bg: "#ECFDF5", color: "#065F46", label: "Paid" },
+  pending: { bg: "#FEF3E2", color: "#92400E", label: "Pending" },
+  overdue: { bg: "#FEF2F2", color: "#991B1B", label: "Overdue" },
+}
 
 const PROJECTS = [
   {
-    name: "Brand Identity — Orin Studio",
-    client: "Orin Studio",
-    due: "Apr 18",
-    status: "on-track",
+    name: "Brand refresh",
+    client: "Acme Co",
+    status: "progress" as Status,
     progress: 72,
+    deadline: "Apr 14",
+    value: "$3,200",
   },
   {
-    name: "Web Redesign — Calla Co.",
-    client: "Calla Co.",
-    due: "Apr 22",
-    status: "at-risk",
-    progress: 38,
+    name: "Mobile app",
+    client: "NovaTech",
+    status: "track" as Status,
+    progress: 45,
+    deadline: "Apr 22",
+    value: "$8,500",
   },
   {
-    name: "Copy Deck — Meadow Foods",
-    client: "Meadow Foods",
-    due: "Apr 30",
-    status: "on-track",
-    progress: 55,
+    name: "API documentation",
+    client: "Streamline",
+    status: "review" as Status,
+    progress: 90,
+    deadline: "Apr 12",
+    value: "$1,800",
   },
   {
-    name: "Mobile App UI — Vesper",
-    client: "Vesper",
-    due: "May 10",
-    status: "not-started",
-    progress: 0,
+    name: "Dashboard redesign",
+    client: "Clearpath",
+    status: "risk" as Status,
+    progress: 30,
+    deadline: "Apr 18",
+    value: "$5,600",
   },
 ]
 
-const TASKS = [
-  { label: "Send revised proposal to Orin Studio", done: true },
-  { label: "Review Calla Co. wireframes", done: false },
-  { label: "Invoice Meadow Foods — milestone 2", done: false },
-  { label: "Schedule kickoff with Vesper team", done: false },
-  { label: "Update contract template", done: true },
+const PAYMENTS = [
+  {
+    client: "NovaTech",
+    invoice: "#INV-041",
+    amount: "$2,000",
+    date: "Apr 8",
+    status: "paid" as Status,
+  },
+  {
+    client: "Acme Co",
+    invoice: "#INV-040",
+    amount: "$1,580",
+    date: "Apr 5",
+    status: "paid" as Status,
+  },
+  {
+    client: "Streamline",
+    invoice: "#INV-039",
+    amount: "$900",
+    date: "Apr 1",
+    status: "pending" as Status,
+  },
+  {
+    client: "Clearpath",
+    invoice: "#INV-038",
+    amount: "$340",
+    date: "Mar 28",
+    status: "overdue" as Status,
+  },
 ]
 
-const statusMeta: Record<
-  string,
-  { label: string; color: string; Icon: React.ElementType }
-> = {
-  "on-track": { label: "On track", color: "#6EBF8B", Icon: CheckCircle2 },
-  "at-risk": { label: "At risk", color: "#E07A5F", Icon: AlertCircle },
-  "not-started": { label: "Not started", color: colors.mauve, Icon: Circle },
+function Pill({ status }: { status: Status }) {
+  const s = STATUS_STYLE[status]
+  return (
+    <span
+      style={{
+        display: "inline-block",
+        fontSize: 10,
+        fontWeight: 500,
+        padding: "2px 8px",
+        borderRadius: 2,
+        background: s.bg,
+        color: s.color,
+        fontFamily: "system-ui, sans-serif",
+      }}
+    >
+      {s.label}
+    </span>
+  )
 }
 
-export default function DashboardPage() {
-  const today = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  })
-
+function SectionHead({ title, link }: { title: string; link: string }) {
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      style={{ maxWidth: 960, margin: "0 auto" }}
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: 16,
+      }}
     >
-      {/* Header */}
-      <motion.div variants={item} style={{ marginBottom: 32 }}>
-        <p
-          style={{
-            fontSize: 12,
-            color: colors.mauve,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            marginBottom: 4,
-          }}
-        >
-          {today}
-        </p>
-        <h1
-          style={{
-            fontSize: 26,
-            fontWeight: 600,
-            color: colors.navy,
-            letterSpacing: "-0.03em",
-            lineHeight: 1.2,
-          }}
-        >
-          Good morning, John.
-        </h1>
-        <p style={{ fontSize: 14, color: colors.indigo, marginTop: 4 }}>
-          You have 3 open tasks and 2 invoices pending this week.
-        </p>
-      </motion.div>
-
-      {/* Stats row */}
-      <motion.div
-        variants={item}
+      <span
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: 14,
-          marginBottom: 28,
+          fontSize: 11,
+          fontWeight: 600,
+          color: "#9A8C98",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase" as const,
+          fontFamily: "system-ui, sans-serif",
         }}
       >
-        {STATS.map((s) => (
-          <div
-            key={s.label}
-            style={{
-              background: "#fff",
-              border: `1px solid ${colors.rose}55`,
-              borderRadius: 14,
-              padding: "18px 20px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 10,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <span
-                style={{ fontSize: 12, color: colors.mauve, fontWeight: 500 }}
-              >
-                {s.label}
-              </span>
-              <div
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 8,
-                  background: s.accent + "18",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <s.Icon size={14} color={s.accent} />
-              </div>
-            </div>
-            <div>
-              <p
-                style={{
-                  fontSize: 24,
-                  fontWeight: 700,
-                  color: colors.navy,
-                  letterSpacing: "-0.04em",
-                  lineHeight: 1,
-                }}
-              >
-                {s.value}
-              </p>
-              <p
-                style={{
-                  fontSize: 11,
-                  marginTop: 5,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 3,
-                  color: s.up ? "#6EBF8B" : "#E07A5F",
-                  fontWeight: 500,
-                }}
-              >
-                {s.up ? (
-                  <ArrowUpRight size={12} />
-                ) : (
-                  <ArrowDownRight size={12} />
-                )}
-                {s.change}
-              </p>
-            </div>
-          </div>
-        ))}
-      </motion.div>
+        {title}
+      </span>
+      <a
+        href={link}
+        style={{
+          fontSize: 12,
+          color: "#9A8C98",
+          textDecoration: "none",
+          fontFamily: "system-ui, sans-serif",
+        }}
+      >
+        View all
+      </a>
+    </div>
+  )
+}
 
-      {/* Two-col: Projects + Tasks */}
+const thStyle: React.CSSProperties = {
+  textAlign: "left",
+  paddingBottom: 10,
+  fontSize: 11,
+  fontWeight: 500,
+  color: "#9A8C98",
+  letterSpacing: "0.04em",
+  fontFamily: "system-ui, sans-serif",
+}
+
+const tdStyle: React.CSSProperties = {
+  padding: "11px 0",
+  color: colors.navy,
+  verticalAlign: "middle",
+  fontSize: 12.5,
+  fontFamily: "system-ui, sans-serif",
+  borderBottom: BORDER_LIGHT,
+}
+
+export default function OverviewPage() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        overflow: "hidden",
+      }}
+    >
+      {/* Topbar */}
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 340px",
-          gap: 14,
-          alignItems: "start",
+          height: 52,
+          padding: "0 28px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: BORDER,
+          background: "#fff",
+          flexShrink: 0,
         }}
       >
-        {/* Projects */}
-        <motion.div
-          variants={item}
+        <span
           style={{
-            background: "#fff",
-            border: `1px solid ${colors.rose}55`,
-            borderRadius: 14,
-            overflow: "hidden",
+            fontSize: 14,
+            fontWeight: 600,
+            color: colors.navy,
+            letterSpacing: "-0.01em",
+            fontFamily: "system-ui, sans-serif",
           }}
         >
-          <div
+          Overview
+        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span
             style={{
-              padding: "16px 20px",
-              borderBottom: `1px solid ${colors.rose}33`,
+              fontSize: 12,
+              color: "#9A8C98",
+              fontFamily: "system-ui, sans-serif",
+            }}
+          >
+            April 11, 2026
+          </span>
+          <button
+            style={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between",
+              gap: 5,
+              padding: "6px 14px",
+              border: BORDER,
+              background: colors.navy,
+              color: "#fff",
+              fontSize: 12,
+              cursor: "pointer",
+              fontFamily: "system-ui, sans-serif",
+              borderRadius: 3,
+              borderColor: colors.navy,
             }}
           >
-            <span style={{ fontSize: 13, fontWeight: 600, color: colors.navy }}>
-              Active Projects
-            </span>
-            <a
-              href="/dashboard/projects"
-              style={{
-                fontSize: 12,
-                color: colors.mauve,
-                textDecoration: "none",
-                fontWeight: 500,
-              }}
-            >
-              View all →
-            </a>
-          </div>
+            <Plus size={11} strokeWidth={2.5} />
+            New project
+          </button>
+        </div>
+      </div>
 
-          <div>
-            {PROJECTS.map((p, i) => {
-              const meta = statusMeta[p.status]
-              return (
-                <div
-                  key={p.name}
-                  style={{
-                    padding: "14px 20px",
-                    borderBottom:
-                      i < PROJECTS.length - 1
-                        ? `1px solid ${colors.cream}`
-                        : "none",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      justifyContent: "space-between",
-                      marginBottom: 8,
-                    }}
-                  >
-                    <div>
-                      <p
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 500,
-                          color: colors.navy,
-                          marginBottom: 2,
-                        }}
-                      >
-                        {p.name}
-                      </p>
-                      <p style={{ fontSize: 11, color: colors.mauve }}>
-                        Due {p.due}
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 4,
-                        padding: "3px 8px",
-                        borderRadius: 20,
-                        background: meta.color + "18",
-                      }}
-                    >
-                      <meta.Icon size={10} color={meta.color} />
-                      <span
-                        style={{
-                          fontSize: 11,
-                          color: meta.color,
-                          fontWeight: 500,
-                        }}
-                      >
-                        {meta.label}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Progress bar */}
-                  <div
-                    style={{
-                      height: 4,
-                      borderRadius: 99,
-                      background: colors.cream,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${p.progress}%`,
-                        borderRadius: 99,
-                        background:
-                          p.status === "at-risk" ? "#E07A5F" : colors.indigo,
-                        transition: "width 0.6s ease",
-                      }}
-                    />
-                  </div>
-                  <p
-                    style={{
-                      fontSize: 10,
-                      color: colors.mauve,
-                      marginTop: 4,
-                      textAlign: "right",
-                    }}
-                  >
-                    {p.progress}% complete
-                  </p>
-                </div>
-              )
-            })}
-          </div>
-        </motion.div>
-
-        {/* Tasks */}
-        <motion.div
-          variants={item}
-          style={{
-            background: "#fff",
-            border: `1px solid ${colors.rose}55`,
-            borderRadius: 14,
-            overflow: "hidden",
-          }}
-        >
+      {/* Body */}
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+        {/* Main */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "28px" }}>
+          {/* Metrics strip — no cards, just a bordered grid */}
           <div
             style={{
-              padding: "16px 20px",
-              borderBottom: `1px solid ${colors.rose}33`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
+              display: "grid",
+              gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+              border: BORDER,
+              borderRight: "none",
+              marginBottom: 36,
             }}
           >
-            <span style={{ fontSize: 13, fontWeight: 600, color: colors.navy }}>
-              Tasks
-            </span>
-            <span style={{ fontSize: 11, color: colors.mauve }}>
-              {TASKS.filter((t) => t.done).length}/{TASKS.length} done
-            </span>
-          </div>
-
-          <div
-            style={{
-              padding: "10px 12px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-            }}
-          >
-            {TASKS.map((t) => (
+            {METRICS.map(({ label, value, sub, subColor }) => (
               <div
-                key={t.label}
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 10,
-                  padding: "9px 8px",
-                  borderRadius: 8,
-                  cursor: "pointer",
-                  transition: "background 0.12s",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = colors.cream)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background = "transparent")
-                }
+                key={label}
+                style={{ padding: "20px 20px 18px", borderRight: BORDER }}
               >
-                <CheckCircle2
-                  size={15}
-                  style={{ marginTop: 1, minWidth: 15 }}
-                  color={t.done ? "#6EBF8B" : colors.rose}
-                  fill={t.done ? "#6EBF8B22" : "none"}
-                />
-                <span
+                <p
                   style={{
-                    fontSize: 12,
-                    color: t.done ? colors.mauve : colors.navy,
-                    textDecoration: t.done ? "line-through" : "none",
-                    lineHeight: 1.45,
+                    fontSize: 11,
+                    color: "#9A8C98",
+                    marginBottom: 8,
+                    fontFamily: "system-ui, sans-serif",
+                    letterSpacing: "0.02em",
                   }}
                 >
-                  {t.label}
-                </span>
+                  {label}
+                </p>
+                <p
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 600,
+                    color: colors.navy,
+                    letterSpacing: "-0.03em",
+                    marginBottom: 4,
+                    fontFamily: "system-ui, sans-serif",
+                  }}
+                >
+                  {value}
+                </p>
+                <p
+                  style={{
+                    fontSize: 11,
+                    color: subColor,
+                    fontFamily: "system-ui, sans-serif",
+                  }}
+                >
+                  {sub}
+                </p>
               </div>
             ))}
           </div>
-        </motion.div>
+
+          {/* Projects table */}
+          <div style={{ marginBottom: 36 }}>
+            <SectionHead title="Active projects" link="/dashboard/projects" />
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ borderBottom: BORDER }}>
+                  <th style={{ ...thStyle, width: "26%" }}>Project</th>
+                  <th style={{ ...thStyle, width: "16%" }}>Client</th>
+                  <th style={{ ...thStyle, width: "13%" }}>Status</th>
+                  <th style={{ ...thStyle, width: "14%" }}>Progress</th>
+                  <th style={thStyle}>Deadline</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {PROJECTS.map(
+                  ({ name, client, status, progress, deadline, value }) => (
+                    <tr key={name}>
+                      <td style={{ ...tdStyle, fontWeight: 500 }}>{name}</td>
+                      <td style={{ ...tdStyle, color: "#9A8C98" }}>{client}</td>
+                      <td style={tdStyle}>
+                        <Pill status={status} />
+                      </td>
+                      <td style={tdStyle}>
+                        <div
+                          style={{
+                            width: 56,
+                            height: 3,
+                            background: "#F0EDE9",
+                            overflow: "hidden",
+                            borderRadius: 0,
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: `${progress}%`,
+                              height: "100%",
+                              background: colors.rose,
+                            }}
+                          />
+                        </div>
+                      </td>
+                      <td style={{ ...tdStyle, color: "#9A8C98" }}>
+                        {deadline}
+                      </td>
+                      <td style={{ ...tdStyle, textAlign: "right" }}>
+                        {value}
+                      </td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Payments table */}
+          <div>
+            <SectionHead title="Recent payments" link="/dashboard/payments" />
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ borderBottom: BORDER }}>
+                  <th style={{ ...thStyle, width: "26%" }}>Client</th>
+                  <th style={thStyle}>Invoice</th>
+                  <th style={thStyle}>Amount</th>
+                  <th style={thStyle}>Date</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {PAYMENTS.map(({ client, invoice, amount, date, status }) => (
+                  <tr key={invoice}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{client}</td>
+                    <td style={{ ...tdStyle, color: "#9A8C98" }}>{invoice}</td>
+                    <td style={tdStyle}>{amount}</td>
+                    <td style={{ ...tdStyle, color: "#9A8C98" }}>{date}</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>
+                      <Pill status={status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Right panel */}
+        <RightPanel />
       </div>
-    </motion.div>
+    </div>
   )
 }
