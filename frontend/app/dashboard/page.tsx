@@ -1,3 +1,6 @@
+// app/dashboard/page.tsx
+"use client"
+
 import { colors } from "@/lib/colors"
 import { Plus } from "lucide-react"
 
@@ -10,46 +13,48 @@ const METRICS = [
     value: "$4,820",
     sub: "↑ 18% vs March",
     subColor: "#4A7C59",
+    alert: false,
   },
   {
-    label: "Active clients",
-    value: "12",
-    sub: "↑ 2 this month",
-    subColor: "#4A7C59",
-  },
-  {
-    label: "Open projects",
+    label: "Active projects",
     value: "7",
     sub: "3 due this week",
     subColor: "#9A8C98",
+    alert: false,
   },
   {
-    label: "Unpaid invoices",
+    label: "Pending payments",
     value: "$1,240",
-    sub: "2 overdue",
-    subColor: "#A0522D",
+    sub: "2 awaiting payment",
+    subColor: "#92400E",
+    alert: true,
+  },
+  {
+    label: "Overdue tasks",
+    value: "2",
+    sub: "Immediate attention needed",
+    subColor: "#991B1B",
+    alert: true,
   },
 ]
 
 type Status =
-  | "progress"
-  | "track"
-  | "review"
-  | "risk"
-  | "paid"
   | "pending"
+  | "in_progress"
+  | "in_review"
+  | "completed"
+  | "paid"
   | "overdue"
 
 const STATUS_STYLE: Record<
   Status,
   { bg: string; color: string; label: string }
 > = {
-  progress: { bg: "#FEF3E2", color: "#92400E", label: "In progress" },
-  track: { bg: "#ECFDF5", color: "#065F46", label: "On track" },
-  review: { bg: "#EFF6FF", color: "#1E40AF", label: "In review" },
-  risk: { bg: "#FEF2F2", color: "#991B1B", label: "At risk" },
+  pending: { bg: "#F5F2EF", color: "#9A8C98", label: "Pending" },
+  in_progress: { bg: "#FEF3E2", color: "#92400E", label: "In Progress" },
+  in_review: { bg: "#EFF6FF", color: "#1E40AF", label: "In Review" },
+  completed: { bg: "#ECFDF5", color: "#065F46", label: "Completed" },
   paid: { bg: "#ECFDF5", color: "#065F46", label: "Paid" },
-  pending: { bg: "#FEF3E2", color: "#92400E", label: "Pending" },
   overdue: { bg: "#FEF2F2", color: "#991B1B", label: "Overdue" },
 }
 
@@ -57,34 +62,38 @@ const PROJECTS = [
   {
     name: "Brand refresh",
     client: "Acme Co",
-    status: "progress" as Status,
+    status: "in_progress" as Status,
     progress: 72,
     deadline: "Apr 14",
     value: "$3,200",
+    overdue: false,
   },
   {
     name: "Mobile app",
     client: "NovaTech",
-    status: "track" as Status,
+    status: "in_progress" as Status,
     progress: 45,
     deadline: "Apr 22",
     value: "$8,500",
+    overdue: false,
   },
   {
     name: "API documentation",
     client: "Streamline",
-    status: "review" as Status,
+    status: "in_review" as Status,
     progress: 90,
     deadline: "Apr 12",
     value: "$1,800",
+    overdue: false,
   },
   {
     name: "Dashboard redesign",
     client: "Clearpath",
-    status: "risk" as Status,
+    status: "in_progress" as Status,
     progress: 30,
-    deadline: "Apr 18",
+    deadline: "Apr 8",
     value: "$5,600",
+    overdue: true,
   },
 ]
 
@@ -245,14 +254,13 @@ export default function OverviewPage() {
               alignItems: "center",
               gap: 5,
               padding: "6px 14px",
-              border: BORDER,
               background: colors.navy,
               color: "#fff",
               fontSize: 12,
               cursor: "pointer",
               fontFamily: "system-ui, sans-serif",
               borderRadius: 3,
-              borderColor: colors.navy,
+              border: "none",
             }}
           >
             <Plus size={11} strokeWidth={2.5} />
@@ -262,143 +270,195 @@ export default function OverviewPage() {
       </div>
 
       {/* Body */}
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        {/* Main */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "28px" }}>
-          {/* Metrics strip — no cards, just a bordered grid */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-              border: BORDER,
-              borderRight: "none",
-              marginBottom: 36,
-            }}
-          >
-            {METRICS.map(({ label, value, sub, subColor }) => (
-              <div
-                key={label}
-                style={{ padding: "20px 20px 18px", borderRight: BORDER }}
+      <div style={{ flex: 1, overflowY: "auto", padding: "28px" }}>
+        {/* Metrics strip */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+            border: BORDER,
+            borderRight: "none",
+            marginBottom: 36,
+          }}
+        >
+          {METRICS.map(({ label, value, sub, subColor, alert }) => (
+            <div
+              key={label}
+              style={{
+                padding: "20px 20px 18px",
+                borderRight: BORDER,
+                background: alert ? "#FFFBFB" : "#fff",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 11,
+                  color: "#9A8C98",
+                  marginBottom: 8,
+                  fontFamily: "system-ui, sans-serif",
+                  letterSpacing: "0.02em",
+                }}
               >
-                <p
-                  style={{
-                    fontSize: 11,
-                    color: "#9A8C98",
-                    marginBottom: 8,
-                    fontFamily: "system-ui, sans-serif",
-                    letterSpacing: "0.02em",
-                  }}
-                >
-                  {label}
-                </p>
-                <p
-                  style={{
-                    fontSize: 22,
-                    fontWeight: 600,
-                    color: colors.navy,
-                    letterSpacing: "-0.03em",
-                    marginBottom: 4,
-                    fontFamily: "system-ui, sans-serif",
-                  }}
-                >
-                  {value}
-                </p>
-                <p
-                  style={{
-                    fontSize: 11,
-                    color: subColor,
-                    fontFamily: "system-ui, sans-serif",
-                  }}
-                >
-                  {sub}
-                </p>
-              </div>
-            ))}
-          </div>
+                {label}
+              </p>
+              <p
+                style={{
+                  fontSize: 22,
+                  fontWeight: 600,
+                  color: alert ? subColor : colors.navy,
+                  letterSpacing: "-0.03em",
+                  marginBottom: 4,
+                  fontFamily: "system-ui, sans-serif",
+                }}
+              >
+                {value}
+              </p>
+              <p
+                style={{
+                  fontSize: 11,
+                  color: subColor,
+                  fontFamily: "system-ui, sans-serif",
+                }}
+              >
+                {sub}
+              </p>
+            </div>
+          ))}
+        </div>
 
-          {/* Projects table */}
-          <div style={{ marginBottom: 36 }}>
-            <SectionHead title="Active projects" link="/dashboard/projects" />
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr style={{ borderBottom: BORDER }}>
-                  <th style={{ ...thStyle, width: "26%" }}>Project</th>
-                  <th style={{ ...thStyle, width: "16%" }}>Client</th>
-                  <th style={{ ...thStyle, width: "13%" }}>Status</th>
-                  <th style={{ ...thStyle, width: "14%" }}>Progress</th>
-                  <th style={thStyle}>Deadline</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {PROJECTS.map(
-                  ({ name, client, status, progress, deadline, value }) => (
-                    <tr key={name}>
-                      <td style={{ ...tdStyle, fontWeight: 500 }}>{name}</td>
-                      <td style={{ ...tdStyle, color: "#9A8C98" }}>{client}</td>
-                      <td style={tdStyle}>
-                        <Pill status={status} />
-                      </td>
-                      <td style={tdStyle}>
-                        <div
-                          style={{
-                            width: 56,
-                            height: 3,
-                            background: "#F0EDE9",
-                            overflow: "hidden",
-                            borderRadius: 0,
-                          }}
-                        >
-                          <div
+        {/* Projects table */}
+        <div style={{ marginBottom: 36 }}>
+          <SectionHead title="Active projects" link="/dashboard/projects" />
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ borderBottom: BORDER }}>
+                <th style={{ ...thStyle, width: "26%" }}>Project</th>
+                <th style={{ ...thStyle, width: "16%" }}>Client</th>
+                <th style={{ ...thStyle, width: "13%" }}>Status</th>
+                <th style={{ ...thStyle, width: "14%" }}>Progress</th>
+                <th style={thStyle}>Deadline</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PROJECTS.map(
+                ({
+                  name,
+                  client,
+                  status,
+                  progress,
+                  deadline,
+                  value,
+                  overdue,
+                }) => (
+                  <tr
+                    key={name}
+                    style={{ background: overdue ? "#FFFBFB" : "transparent" }}
+                  >
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        {overdue && (
+                          <span
                             style={{
-                              width: `${progress}%`,
-                              height: "100%",
-                              background: colors.rose,
+                              width: 6,
+                              height: 6,
+                              borderRadius: "50%",
+                              background: "#991B1B",
+                              flexShrink: 0,
+                              display: "inline-block",
                             }}
                           />
-                        </div>
-                      </td>
-                      <td style={{ ...tdStyle, color: "#9A8C98" }}>
-                        {deadline}
-                      </td>
-                      <td style={{ ...tdStyle, textAlign: "right" }}>
-                        {value}
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Payments table */}
-          <div>
-            <SectionHead title="Recent payments" link="/dashboard/payments" />
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr style={{ borderBottom: BORDER }}>
-                  <th style={{ ...thStyle, width: "26%" }}>Client</th>
-                  <th style={thStyle}>Invoice</th>
-                  <th style={thStyle}>Amount</th>
-                  <th style={thStyle}>Date</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {PAYMENTS.map(({ client, invoice, amount, date, status }) => (
-                  <tr key={invoice}>
-                    <td style={{ ...tdStyle, fontWeight: 500 }}>{client}</td>
-                    <td style={{ ...tdStyle, color: "#9A8C98" }}>{invoice}</td>
-                    <td style={tdStyle}>{amount}</td>
-                    <td style={{ ...tdStyle, color: "#9A8C98" }}>{date}</td>
-                    <td style={{ ...tdStyle, textAlign: "right" }}>
+                        )}
+                        {name}
+                      </div>
+                    </td>
+                    <td style={{ ...tdStyle, color: "#9A8C98" }}>{client}</td>
+                    <td style={tdStyle}>
                       <Pill status={status} />
                     </td>
+                    <td style={tdStyle}>
+                      <div
+                        style={{
+                          width: 56,
+                          height: 3,
+                          background: "#F0EDE9",
+                          overflow: "hidden",
+                          borderRadius: 0,
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: `${progress}%`,
+                            height: "100%",
+                            background: overdue ? "#991B1B" : colors.rose,
+                          }}
+                        />
+                      </div>
+                    </td>
+                    <td
+                      style={{
+                        ...tdStyle,
+                        color: overdue ? "#991B1B" : "#9A8C98",
+                        fontWeight: overdue ? 500 : 400,
+                      }}
+                    >
+                      {deadline}
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>{value}</td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                )
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Payments table */}
+        <div>
+          <SectionHead title="Recent payments" link="/dashboard/payments" />
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ borderBottom: BORDER }}>
+                <th style={{ ...thStyle, width: "26%" }}>Client</th>
+                <th style={thStyle}>Invoice</th>
+                <th style={thStyle}>Amount</th>
+                <th style={thStyle}>Date</th>
+                <th style={{ ...thStyle, textAlign: "right" }}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PAYMENTS.map(({ client, invoice, amount, date, status }) => (
+                <tr
+                  key={invoice}
+                  style={{
+                    background:
+                      status === "overdue" ? "#FFFBFB" : "transparent",
+                  }}
+                >
+                  <td style={{ ...tdStyle, fontWeight: 500 }}>{client}</td>
+                  <td style={{ ...tdStyle, color: "#9A8C98" }}>{invoice}</td>
+                  <td
+                    style={{
+                      ...tdStyle,
+                      color: status === "overdue" ? "#991B1B" : colors.navy,
+                      fontWeight: status === "overdue" ? 500 : 400,
+                    }}
+                  >
+                    {amount}
+                  </td>
+                  <td style={{ ...tdStyle, color: "#9A8C98" }}>{date}</td>
+                  <td style={{ ...tdStyle, textAlign: "right" }}>
+                    <Pill status={status} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
