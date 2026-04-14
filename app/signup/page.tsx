@@ -1,24 +1,12 @@
-"use client"
-import { useRouter } from "next/navigation"
-import { Logo } from "@/components/ui/logo"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { BarChart, Code, Eye, EyeOff, User } from "lucide-react"
-import Link from "next/link"
+import { signUp } from "@/app/auth/actions"
+import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
-  const router = useRouter()
+  const searchParams = useSearchParams()
+  const error = searchParams.get("error")
+  const message = searchParams.get("message")
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F2E9E4] py-12">
@@ -36,16 +24,28 @@ export default function SignupPage() {
           </div>
         </div>
 
+        {error && (
+          <div className="rounded-sm bg-red-50 p-3 text-xs text-red-600 border border-red-100">
+            {error}
+          </div>
+        )}
+
+        {message && (
+          <div className="rounded-sm bg-green-50 p-3 text-xs text-green-700 border border-green-100">
+            {message}
+          </div>
+        )}
+
         {/* Fields */}
-        <div className="space-y-4">
+        <form action={signUp} className="space-y-4">
           <div className="space-y-1.5">
             <Label
               htmlFor="role"
               className="text-xs font-medium text-[#4A4E69]"
             >
-              Role
+              I am a
             </Label>
-            <Select defaultValue="designer">
+            <Select name="role" defaultValue="freelancer">
               <SelectTrigger
                 id="role"
                 className="border-[#F0EDE9] bg-[#FAFAFA] text-[#22223B] focus:ring-[#9A8C98]/10 [&>span]:flex [&>span]:items-center [&>span]:gap-2"
@@ -53,47 +53,31 @@ export default function SignupPage() {
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="designer">
+                <SelectItem value="freelancer">
                   <User size={14} />
-                  <span>Product Designer</span>
+                  <span>Freelancer</span>
                 </SelectItem>
-                <SelectItem value="developer">
+                <SelectItem value="client">
                   <Code size={14} />
-                  <span>Developer</span>
-                </SelectItem>
-                <SelectItem value="manager">
-                  <BarChart size={14} />
-                  <span>Product Manager</span>
+                  <span>Client</span>
                 </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label
-                htmlFor="firstName"
-                className="text-xs font-medium text-[#4A4E69]"
-              >
-                First name
-              </Label>
-              <Input
-                id="firstName"
-                className="border-[#F0EDE9] bg-[#FAFAFA] text-[#22223B] focus-visible:border-[#9A8C98] focus-visible:ring-[#9A8C98]/10"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label
-                htmlFor="lastName"
-                className="text-xs font-medium text-[#4A4E69]"
-              >
-                Last name
-              </Label>
-              <Input
-                id="lastName"
-                className="border-[#F0EDE9] bg-[#FAFAFA] text-[#22223B] focus-visible:border-[#9A8C98] focus-visible:ring-[#9A8C98]/10"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <Label
+              htmlFor="full_name"
+              className="text-xs font-medium text-[#4A4E69]"
+            >
+              Full name
+            </Label>
+            <Input
+              id="full_name"
+              name="full_name"
+              required
+              className="border-[#F0EDE9] bg-[#FAFAFA] text-[#22223B] focus-visible:border-[#9A8C98] focus-visible:ring-[#9A8C98]/10"
+            />
           </div>
 
           <div className="space-y-1.5">
@@ -105,7 +89,9 @@ export default function SignupPage() {
             </Label>
             <Input
               id="email"
+              name="email"
               type="email"
+              required
               className="border-[#F0EDE9] bg-[#FAFAFA] text-[#22223B] placeholder:text-[#C9ADA7] focus-visible:border-[#9A8C98] focus-visible:ring-[#9A8C98]/10"
             />
           </div>
@@ -120,7 +106,9 @@ export default function SignupPage() {
             <div className="relative">
               <Input
                 id="password"
+                name="password"
                 type={showPassword ? "text" : "password"}
+                required
                 className="border-[#F0EDE9] bg-[#FAFAFA] pe-9 text-[#22223B] focus-visible:border-[#9A8C98] focus-visible:ring-[#9A8C98]/10"
               />
               <button
@@ -136,6 +124,7 @@ export default function SignupPage() {
           <div className="flex items-start gap-2 pt-1">
             <Checkbox
               id="terms"
+              required
               className="mt-0.5 border-[#C9ADA7] data-[state=checked]:border-[#22223B] data-[state=checked]:bg-[#22223B]"
             />
             <label
@@ -152,15 +141,14 @@ export default function SignupPage() {
               </Link>
             </label>
           </div>
-        </div>
 
-        {/* CTA */}
-        <Button
-          className="w-full bg-[#22223B] text-white hover:bg-[#4A4E69]"
-          onClick={() => router.push("/dashboard")}
-        >
-          Create free account
-        </Button>
+          <Button
+            type="submit"
+            className="w-full bg-[#22223B] text-white hover:bg-[#4A4E69]"
+          >
+            Create free account
+          </Button>
+        </form>
 
         {/* Footer */}
         <p className="text-center text-xs text-[#9A8C98]">

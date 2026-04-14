@@ -18,9 +18,14 @@ const GoogleIcon = (
   </svg>
 )
 
+import { signIn } from "@/app/auth/actions"
+import { useSearchParams } from "next/navigation"
+
 export default function LoginPage() {
   const [isVisible, setIsVisible] = useState(false)
-  const router = useRouter()
+  const searchParams = useSearchParams()
+  const error = searchParams.get("error")
+  const message = searchParams.get("message")
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F2E9E4]">
@@ -37,6 +42,18 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
+
+        {error && (
+          <div className="rounded-sm bg-red-50 p-3 text-xs text-red-600 border border-red-100">
+            {error}
+          </div>
+        )}
+
+        {message && (
+          <div className="rounded-sm bg-green-50 p-3 text-xs text-green-700 border border-green-100">
+            {message}
+          </div>
+        )}
 
         {/* Google */}
         <Button
@@ -55,7 +72,7 @@ export default function LoginPage() {
         </div>
 
         {/* Fields */}
-        <div className="space-y-4">
+        <form action={signIn} className="space-y-4">
           <div className="space-y-1.5">
             <Label
               htmlFor="email"
@@ -66,7 +83,9 @@ export default function LoginPage() {
             <div className="relative">
               <Input
                 id="email"
+                name="email"
                 type="email"
+                required
                 placeholder="you@example.com"
                 className="border-[#F0EDE9] bg-[#FAFAFA] ps-9 text-[#22223B] placeholder:text-[#C9ADA7] focus-visible:border-[#9A8C98] focus-visible:ring-[#9A8C98]/10"
               />
@@ -94,7 +113,9 @@ export default function LoginPage() {
             <div className="relative">
               <Input
                 id="password"
+                name="password"
                 type={isVisible ? "text" : "password"}
+                required
                 placeholder="••••••••"
                 className="border-[#F0EDE9] bg-[#FAFAFA] ps-9 pe-9 text-[#22223B] placeholder:text-[#C9ADA7] focus-visible:border-[#9A8C98] focus-visible:ring-[#9A8C98]/10"
               />
@@ -120,16 +141,15 @@ export default function LoginPage() {
               Remember me for 30 days
             </Label>
           </div>
-        </div>
 
-        {/* CTA */}
-        <Button
-          className="w-full bg-[#22223B] text-white hover:bg-[#4A4E69]"
-          onClick={() => router.push("/dashboard")}
-        >
-          Sign in
-          <ArrowRight className="h-4 w-4" />
-        </Button>
+          <Button
+            type="submit"
+            className="w-full bg-[#22223B] text-white hover:bg-[#4A4E69]"
+          >
+            Sign in
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </form>
 
         {/* Footer */}
         <p className="text-center text-xs text-[#9A8C98]">
