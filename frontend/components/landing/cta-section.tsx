@@ -1,5 +1,5 @@
 "use client"
-
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
@@ -29,7 +29,9 @@ export function CtaSection() {
                 FreelanceHub helps you stay organized from the first client conversation to the
                 final payment follow-up.
               </p>
+              
               <div className="mt-8">
+                <Link href="/login">
                 <Button
                   size="lg"
                   className="h-12 rounded-full bg-[var(--color-navy)] px-6 text-[var(--color-cream)] hover:bg-[var(--color-indigo)]"
@@ -37,7 +39,10 @@ export function CtaSection() {
                   Get Started
                   <ArrowRight className="size-4" />
                 </Button>
-              </div>
+                </Link>
+                </div>
+                
+              
             </div>
           </div>
         </motion.div>
