@@ -1,36 +1,39 @@
-"use client"
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
+import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 
-import { useState } from "react"
-import { Sidebar } from "@/components/dashboard/sidebar"
-
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const [collapsed, setCollapsed] = useState(true)
+  const supabase = await createClient()
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        overflow: "hidden",
-        background: "#fff",
-        color: "#22223B",
-      }}
-    >
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((p) => !p)} />
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-        }}
-      >
-        {children}
-      </div>
-    </div>
-  )
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return redirect("/login")
+  }
+
+  // Fetch profile to get the full name
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, role")
+    .eq("id", user.id)
+    .single()
+
+  const userData = {
+    name: profile?.full_name || user.email?.split("@")[0] || "User",
+    role: profile?.role || "Freelancer",
+  }
+
+  // Redirect clients away from freelancer dashboard
+  if (userData.role === 'client') {
+    return redirect("/portal")
+  }
+
+  return <DashboardShell user={userData}>{children}</DashboardShell>
 }
+

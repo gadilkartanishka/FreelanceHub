@@ -1,0 +1,286 @@
+"use client"
+
+import { useState, useTransition } from "react"
+import { X } from "lucide-react"
+import { colors } from "@/lib/colors"
+import { createPaymentAction } from "@/app/dashboard/payments/actions"
+import type { Project } from "@/lib/types"
+
+const BORDER = "1px solid #E8E4E0"
+
+const labelStyle: React.CSSProperties = {
+  fontSize: 11,
+  fontWeight: 500,
+  color: "#4A4E69",
+  fontFamily: "system-ui, sans-serif",
+  marginBottom: 4,
+  display: "block",
+}
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "8px 12px",
+  fontSize: 12.5,
+  border: "1px solid #F0EDE9",
+  borderRadius: 3,
+  background: "#FAFAFA",
+  color: colors.navy,
+  fontFamily: "system-ui, sans-serif",
+  outline: "none",
+  boxSizing: "border-box",
+}
+
+export function LogPaymentModal({
+  open,
+  onClose,
+  projects,
+  defaultProjectId,
+}: {
+  open: boolean
+  onClose: () => void
+  projects: Pick<Project, "id" | "title">[]
+  defaultProjectId?: string
+}) {
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null)
+
+  if (!open) return null
+
+  const handleSubmit = (formData: FormData) => {
+    setError(null)
+    startTransition(async () => {
+      const result = await createPaymentAction(formData)
+      if (result && 'error' in result && result.error) {
+        setError(result.error)
+      } else {
+        onClose()
+      }
+    })
+  }
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(34,34,59,0.3)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
+      <div
+        style={{
+          background: "#fff",
+          border: BORDER,
+          width: 460,
+          maxHeight: "85vh",
+          overflowY: "auto",
+          padding: "28px",
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 24,
+          }}
+        >
+          <h2
+            style={{
+              fontSize: 16,
+              fontWeight: 600,
+              color: colors.navy,
+              fontFamily: "system-ui, sans-serif",
+            }}
+          >
+            Log Payment
+          </h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "#9A8C98",
+              padding: 4,
+            }}
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {error && (
+          <div
+            style={{
+              padding: "8px 12px",
+              borderRadius: 3,
+              background: "#FEF2F2",
+              color: "#991B1B",
+              fontSize: 12,
+              marginBottom: 16,
+              border: "1px solid #FEE2E2",
+              fontFamily: "system-ui, sans-serif",
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        <form action={handleSubmit}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {/* Project */}
+            <div>
+              <label style={labelStyle}>
+                Project <span style={{ color: "#991B1B" }}>*</span>
+              </label>
+              <select
+                name="project_id"
+                required
+                defaultValue={defaultProjectId || ""}
+                style={{ ...inputStyle, cursor: "pointer" }}
+              >
+                <option value="">Select a project…</option>
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Amount & Date */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div>
+                <label style={labelStyle}>
+                  Amount ($) <span style={{ color: "#991B1B" }}>*</span>
+                </label>
+                <input
+                  name="amount"
+                  type="number"
+                  required
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>
+                  Date Received <span style={{ color: "#991B1B" }}>*</span>
+                </label>
+                <input
+                  name="date_received"
+                  type="date"
+                  required
+                  defaultValue={new Date().toISOString().split("T")[0]}
+                  style={inputStyle}
+                />
+              </div>
+            </div>
+
+            {/* Method & Status */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div>
+                <label style={labelStyle}>Payment Method</label>
+                <input name="method" placeholder="e.g. Bank transfer, UPI" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Status</label>
+                <select
+                  name="status"
+                  defaultValue="paid"
+                  style={{ ...inputStyle, cursor: "pointer" }}
+                >
+                  <option value="paid">Paid</option>
+                  <option value="pending">Pending</option>
+                  <option value="overdue">Overdue</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label style={labelStyle}>Notes</label>
+              <textarea
+                name="notes"
+                placeholder="e.g. Advance for phase 1"
+                rows={2}
+                style={{ ...inputStyle, resize: "vertical", minHeight: 52 }}
+              />
+            </div>
+
+            {/* Proof Upload */}
+            <div>
+              <label style={labelStyle}>Payment Proof (Image or PDF)</label>
+              <input
+                name="proof"
+                type="file"
+                accept="image/*,.pdf"
+                style={{
+                  ...inputStyle,
+                  padding: "6px 12px",
+                  fontSize: 11,
+                  background: "#fff",
+                  cursor: "pointer",
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 10,
+              marginTop: 24,
+              paddingTop: 16,
+              borderTop: "1px solid #F0EDE9",
+            }}
+          >
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                padding: "7px 16px",
+                fontSize: 12,
+                border: BORDER,
+                background: "#fff",
+                color: colors.indigo,
+                borderRadius: 3,
+                cursor: "pointer",
+                fontFamily: "system-ui, sans-serif",
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isPending}
+              style={{
+                padding: "7px 16px",
+                fontSize: 12,
+                border: "none",
+                background: colors.navy,
+                color: "#fff",
+                borderRadius: 3,
+                cursor: isPending ? "not-allowed" : "pointer",
+                fontFamily: "system-ui, sans-serif",
+                opacity: isPending ? 0.7 : 1,
+              }}
+            >
+              {isPending ? "Saving…" : "Log Payment"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}

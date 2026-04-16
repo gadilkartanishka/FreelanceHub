@@ -26,12 +26,17 @@ const NAV = [
 
 const BORDER = "1px solid #E8E4E0"
 
+import { signOut } from "@/app/auth/actions"
+import { LogOut } from "lucide-react"
+
 export function Sidebar({
   collapsed,
   onToggle,
+  user = { name: "John Doe", role: "Freelancer" },
 }: {
   collapsed: boolean
   onToggle: () => void
+  user?: { name: string; role: string }
 }) {
   const pathname = usePathname()
 
@@ -147,6 +152,43 @@ export function Sidebar({
           )
         })}
 
+        {/* Logout */}
+        <form action={signOut} style={{ marginTop: 4 }}>
+          <button
+            type="submit"
+            title={collapsed ? "Logout" : undefined}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              padding: collapsed ? "8px 0" : "8px 16px",
+              justifyContent: collapsed ? "center" : "flex-start",
+              textDecoration: "none",
+              color: "#9A8C98",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "system-ui, sans-serif",
+              fontSize: 12.5,
+              transition: "color 0.1s, background 0.1s",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "#991B1B"
+              e.currentTarget.style.background = "#FFFBFB"
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "#9A8C98"
+              e.currentTarget.style.background = "transparent"
+            }}
+          >
+            <LogOut size={14} style={{ minWidth: 14, flexShrink: 0 }} />
+            {!collapsed && <span style={{ flex: 1 }}>Logout</span>}
+          </button>
+        </form>
+
         {/* Collapse toggle */}
         <button
           onClick={onToggle}
@@ -221,7 +263,7 @@ export function Sidebar({
             flexShrink: 0,
           }}
         >
-          JD
+          {user.name.split(' ').map(n => n[0]).join('')}
         </div>
         {!collapsed && (
           <div>
@@ -233,7 +275,7 @@ export function Sidebar({
                 fontFamily: "system-ui, sans-serif",
               }}
             >
-              John Doe
+              {user.name}
             </p>
             <p
               style={{
@@ -242,7 +284,7 @@ export function Sidebar({
                 fontFamily: "system-ui, sans-serif",
               }}
             >
-              Freelancer
+              {user.role}
             </p>
           </div>
         )}
