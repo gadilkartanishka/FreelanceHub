@@ -23,6 +23,8 @@ export default function SignupPage() {
   const searchParams = useSearchParams()
   const error = searchParams.get("error")
   const message = searchParams.get("message")
+  const inviteCode = searchParams.get("code")
+  const inviteEmail = searchParams.get("email")
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F2E9E4] py-12">
@@ -32,10 +34,12 @@ export default function SignupPage() {
           <Logo className="mx-auto h-10 w-10" />
           <div>
             <h2 className="text-xl font-semibold tracking-tight text-[#22223B]">
-              Create an account
+              {inviteCode ? "Join Workspace" : "Create an account"}
             </h2>
             <p className="mt-1 text-sm text-[#9A8C98]">
-              Get started with FreelanceHub for free
+              {inviteCode 
+                ? "Sign up to access your private client portal" 
+                : "Get started with FreelanceHub for free"}
             </p>
           </div>
         </div>
@@ -55,6 +59,9 @@ export default function SignupPage() {
 
         {/* Fields */}
         <form action={signUp} className="space-y-4">
+          {/* Hidden Invite Code */}
+          <input type="hidden" name="invite_code" value={inviteCode || ""} />
+
           <div className="space-y-1.5">
             <Label
               htmlFor="role"
@@ -62,24 +69,32 @@ export default function SignupPage() {
             >
               I am a
             </Label>
-            <Select name="role" defaultValue="freelancer">
-              <SelectTrigger
-                id="role"
-                className="border-[#F0EDE9] bg-[#FAFAFA] text-[#22223B] focus:ring-[#9A8C98]/10 [&>span]:flex [&>span]:items-center [&>span]:gap-2"
-              >
-                <SelectValue placeholder="Select role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="freelancer">
-                  <User size={14} />
-                  <span>Freelancer</span>
-                </SelectItem>
-                <SelectItem value="client">
-                  <Code size={14} />
-                  <span>Client</span>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            {inviteCode ? (
+              <div className="flex items-center gap-2 rounded-sm border border-[#F0EDE9] bg-[#F5F2EF] p-2 text-xs text-[#22223B]">
+                <Code size={14} />
+                <span>Client (Joining Workspace)</span>
+                <input type="hidden" name="role" value="client" />
+              </div>
+            ) : (
+              <Select name="role" defaultValue="freelancer">
+                <SelectTrigger
+                  id="role"
+                  className="border-[#F0EDE9] bg-[#FAFAFA] text-[#22223B] focus:ring-[#9A8C98]/10 [&>span]:flex [&>span]:items-center [&>span]:gap-2"
+                >
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="freelancer">
+                    <User size={14} />
+                    <span>Freelancer</span>
+                  </SelectItem>
+                  <SelectItem value="client">
+                    <Code size={14} />
+                    <span>Client</span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <div className="space-y-1.5">
@@ -109,6 +124,7 @@ export default function SignupPage() {
               name="email"
               type="email"
               required
+              defaultValue={inviteEmail || ""}
               className="border-[#F0EDE9] bg-[#FAFAFA] text-[#22223B] placeholder:text-[#C9ADA7] focus-visible:border-[#9A8C98] focus-visible:ring-[#9A8C98]/10"
             />
           </div>

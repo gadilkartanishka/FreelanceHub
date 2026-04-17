@@ -84,34 +84,8 @@ export async function deleteClientAction(id: string) {
 }
 
 export async function inviteClientAction(clientId: string, email: string) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return redirect('/login')
-
-  // 1. Check if already invited
-  const { data: existingAccess } = await supabase
-    .from('client_access')
-    .select('id')
-    .eq('client_record_id', clientId)
-    .single()
-
-  if (existingAccess) {
-    return { error: 'Client already has an active invitation or access.' }
-  }
-
-  // 2. In a real app, we'd use supabase.auth.admin.inviteUserByEmail(email)
-  // or Resend to send a custom magic link. 
-  // For now, we'll create the record and return a 'simulated' success.
-  
-  // Create a record in client_access
-  // Note: We need a user_id. In a true invite flow, Supabase Auth creates the user first.
-  // Since we don't have service role, we'll implement this as 'Pending Invite' 
-  // and update the schema if necessary, or just plan for the admin key.
-  
-  // Let's assume for MVP we are logging the 'invite sent' status.
-  console.log(`Invite sent to ${email} for client ${clientId}`)
-
-  revalidatePath('/dashboard/clients')
-  return { success: true, message: 'Invitation sent (simulated)' }
+  // Logic removed as per request for a simplified UI-only approach
+  console.log(`Manual invite requested for ${email}`)
+  return { success: true }
 }
 

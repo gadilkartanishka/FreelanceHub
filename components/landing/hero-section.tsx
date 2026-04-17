@@ -1,5 +1,6 @@
 "use client"
-// Add this import at the top
+import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
 import { Navbar } from "@/components/landing/navbar"
 import { Button } from "@/components/ui/button"

@@ -19,8 +19,9 @@ export async function signUp(formData: FormData) {
   const password = formData.get('password') as string
   const fullName = formData.get('full_name') as string
   const role = formData.get('role') as string
+  const inviteCode = formData.get('invite_code') as string
 
-  console.log('Signup Attempt:', { email, fullName, role })
+  console.log('Signup Attempt:', { email, fullName, role, inviteCode })
 
   // 1. Validate Password Strength
   const passwordError = validatePassword(password)
@@ -37,6 +38,7 @@ export async function signUp(formData: FormData) {
       data: {
         full_name: fullName,
         role: role,
+        invite_code: inviteCode || null,
       },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/confirm`,
     },

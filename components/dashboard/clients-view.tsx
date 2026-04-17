@@ -78,10 +78,16 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
   const handleInvite = (id: string, email: string) => {
     startTransition(async () => {
       const res = await inviteClientAction(id, email)
-      if (res.success) {
-        setInviteStatus({ id, success: true })
+      if (res.success && res.inviteUrl) {
+        // Copy to clipboard
+        try {
+          await navigator.clipboard.writeText(res.inviteUrl)
+          setInviteStatus({ id, success: true, message: 'Link copied to clipboard!' })
+        } catch (err) {
+          setInviteStatus({ id, success: true, message: 'Link generated! (Copy manually below)' })
+        }
       } else {
-        setInviteStatus({ id, error: res.error || "Failed to send invite" })
+        setInviteStatus({ id, error: res.error || "Failed to generate link" })
       }
     })
   }
@@ -264,8 +270,6 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                 
                 <div style={{ display: "flex", gap: 10 }}>
                   <button
-                    onClick={() => handleInvite(selected.id, selected.email)}
-                    disabled={isPending}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -277,12 +281,11 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                       fontWeight: 500,
                       borderRadius: 4,
                       border: "none",
-                      cursor: isPending ? "not-allowed" : "pointer",
-                      opacity: isPending ? 0.7 : 1,
+                      cursor: "pointer",
                     }}
                   >
                     <Send size={14} />
-                    {inviteStatus?.id === selected.id && inviteStatus.success ? "Invite Sent" : "Invite Client"}
+                    Invite Client
                   </button>
                   
                   <button
