@@ -9,6 +9,15 @@ import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 
 export function HeroSection() {
+  const [user, setUser] = useState<any>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user)
+    })
+  }, [supabase])
+
   return (
     <ShaderBackground>
       <Navbar />
@@ -49,12 +58,12 @@ export function HeroSection() {
               variants={heroItem}
               className="mt-8 flex flex-col gap-4 sm:flex-row"
             >
-              <Link href="/login">
+              <Link href={user ? "/dashboard" : "/login"}>
                 <Button
                   size="lg"
                   className="h-12 rounded-full bg-[var(--color-cream)] px-6 text-[var(--color-navy)] hover:bg-white"
                 >
-                  Start managing smarter
+                  {user ? "Go to Dashboard" : "Start managing smarter"}
                   <ArrowRight className="size-4" />
                 </Button>
               </Link>

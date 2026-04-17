@@ -1,5 +1,4 @@
-"use client"
-
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
@@ -11,9 +10,12 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  LogOut,
 } from "lucide-react"
 import { colors } from "@/lib/colors"
 import { Logo } from "@/components/ui/logo"
+import { createClient } from "@/lib/supabase/client"
+import { signOut } from "@/app/auth/actions"
 
 const NAV = [
   { href: "/dashboard", label: "Overview", Icon: LayoutDashboard },
@@ -26,19 +28,36 @@ const NAV = [
 
 const BORDER = "1px solid #E8E4E0"
 
-import { signOut } from "@/app/auth/actions"
-import { LogOut } from "lucide-react"
-
 export function Sidebar({
   collapsed,
   onToggle,
-  user = { name: "John Doe", role: "Freelancer" },
 }: {
   collapsed: boolean
   onToggle: () => void
-  user?: { name: string; role: string }
 }) {
   const pathname = usePathname()
+  const [profile, setProfile] = useState<{ full_name: string; role: string } | null>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    async function fetchProfile() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('full_name, role')
+          .eq('id', user.id)
+          .single()
+        
+        if (data) setProfile(data)
+      }
+    }
+    fetchProfile()
+  }, [supabase])
+
+  const initials = profile?.full_name
+    ? profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+    : '??'
 
   return (
     <aside
@@ -152,43 +171,6 @@ export function Sidebar({
           )
         })}
 
-        {/* Logout */}
-        <form action={signOut} style={{ marginTop: 4 }}>
-          <button
-            type="submit"
-            title={collapsed ? "Logout" : undefined}
-            style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              padding: collapsed ? "8px 0" : "8px 16px",
-              justifyContent: collapsed ? "center" : "flex-start",
-              textDecoration: "none",
-              color: "#9A8C98",
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              fontFamily: "system-ui, sans-serif",
-              fontSize: 12.5,
-              transition: "color 0.1s, background 0.1s",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#991B1B"
-              e.currentTarget.style.background = "#FFFBFB"
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#9A8C98"
-              e.currentTarget.style.background = "transparent"
-            }}
-          >
-            <LogOut size={14} style={{ minWidth: 14, flexShrink: 0 }} />
-            {!collapsed && <span style={{ flex: 1 }}>Logout</span>}
-          </button>
-        </form>
-
         {/* Collapse toggle */}
         <button
           onClick={onToggle}
@@ -240,54 +222,91 @@ export function Sidebar({
           borderTop: BORDER,
           padding: collapsed ? "10px 0" : "10px 16px",
           display: "flex",
-          alignItems: "center",
-          gap: 10,
-          justifyContent: collapsed ? "center" : "flex-start",
+          flexDirection: "column",
+          gap: 12,
         }}
       >
         <div
           style={{
-            width: 26,
-            height: 26,
-            minWidth: 26,
-            border: BORDER,
-            borderRadius: 3,
-            background: "#F5F2EF",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            fontSize: 10,
-            fontWeight: 600,
-            color: colors.indigo,
-            fontFamily: "system-ui, sans-serif",
-            flexShrink: 0,
+            gap: 10,
+            justifyContent: collapsed ? "center" : "flex-start",
           }}
         >
-          {user.name.split(' ').map(n => n[0]).join('')}
-        </div>
-        {!collapsed && (
-          <div>
-            <p
-              style={{
-                fontSize: 12,
-                fontWeight: 500,
-                color: colors.navy,
-                fontFamily: "system-ui, sans-serif",
-              }}
-            >
-              {user.name}
-            </p>
-            <p
-              style={{
-                fontSize: 11,
-                color: "#9A8C98",
-                fontFamily: "system-ui, sans-serif",
-              }}
-            >
-              {user.role}
-            </p>
+          <div
+            style={{
+              width: 26,
+              height: 26,
+              minWidth: 26,
+              border: BORDER,
+              borderRadius: 3,
+              background: "#F5F2EF",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 10,
+              fontWeight: 600,
+              color: colors.indigo,
+              fontFamily: "system-ui, sans-serif",
+              flexShrink: 0,
+            }}
+          >
+            {initials}
           </div>
-        )}
+          {!collapsed && (
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: colors.navy,
+                  fontFamily: "system-ui, sans-serif",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {profile?.full_name || "Loading..."}
+              </p>
+              <p
+                style={{
+                  fontSize: 11,
+                  color: "#9A8C98",
+                  fontFamily: "system-ui, sans-serif",
+                  textTransform: "capitalize",
+                }}
+              >
+                {profile?.role || "User"}
+              </p>
+            </div>
+          )}
+        </div>
+
+        <form action={signOut} style={{ width: "100%" }}>
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              padding: collapsed ? "8px 0" : "4px 0",
+              justifyContent: collapsed ? "center" : "flex-start",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "#9A8C98",
+              fontSize: 12,
+              fontFamily: "system-ui, sans-serif",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = colors.rose)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#9A8C98")}
+          >
+            <LogOut size={14} />
+            {!collapsed && <span>Sign out</span>}
+          </button>
+        </form>
       </div>
     </aside>
   )

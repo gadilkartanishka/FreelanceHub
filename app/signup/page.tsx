@@ -1,6 +1,22 @@
+"use client"
+
 import { signUp } from "@/app/auth/actions"
 import { useSearchParams } from "next/navigation"
 import { useState } from "react"
+import Link from "next/link"
+import { Logo } from "@/components/ui/logo"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Eye, EyeOff, User, Code } from "lucide-react"
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -31,8 +47,9 @@ export default function SignupPage() {
         )}
 
         {message && (
-          <div className="rounded-sm bg-green-50 p-3 text-xs text-green-700 border border-green-100">
-            {message}
+          <div className="rounded-sm bg-emerald-50 p-4 text-xs text-emerald-800 border border-emerald-100 flex flex-col gap-1.5 animate-in fade-in slide-in-from-top-1">
+            <p className="font-semibold">Check your email</p>
+            <p>{message}</p>
           </div>
         )}
 
@@ -119,6 +136,9 @@ export default function SignupPage() {
                 {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
               </button>
             </div>
+            <p className="mt-1.5 text-[10px] leading-relaxed text-[#9A8C98]">
+              Must be at least 8 characters with an uppercase letter, lowercase letter, and a number.
+            </p>
           </div>
 
           <div className="flex items-start gap-2 pt-1">
