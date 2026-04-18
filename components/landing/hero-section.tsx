@@ -24,7 +24,6 @@ export function HeroSection() {
       <Navbar />
       <section className="relative isolate overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(34,34,59,0.18),rgba(34,34,59,0.56))]" />
-
         <div className="relative mx-auto flex min-h-[88vh] w-full max-w-7xl flex-col justify-center px-6 py-20 sm:px-10 lg:px-12">
           <motion.div
             variants={heroContainer}

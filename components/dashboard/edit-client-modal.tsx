@@ -3,8 +3,8 @@
 import { useState, useTransition } from "react"
 import { X } from "lucide-react"
 import { colors } from "@/lib/colors"
-import { createPaymentAction } from "@/app/dashboard/payments/actions"
-import type { Project } from "@/lib/types"
+import { updateClientAction } from "@/app/dashboard/clients/actions"
+import type { Client } from "@/lib/types"
 
 const BORDER = "1px solid #E8E4E0"
 
@@ -30,27 +30,27 @@ const inputStyle: React.CSSProperties = {
   boxSizing: "border-box",
 }
 
-export function LogPaymentModal({
+export function EditClientModal({
   open,
   onClose,
-  projects,
-  defaultProjectId,
+  client,
 }: {
   open: boolean
   onClose: () => void
-  projects: Pick<Project, "id" | "title">[]
-  defaultProjectId?: string
+  client: Client | null
 }) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
-  if (!open) return null
+  if (!open || !client) return null
 
   const handleSubmit = (formData: FormData) => {
     setError(null)
     startTransition(async () => {
-      const result = await createPaymentAction(formData)
-      if (result && 'error' in result && result.error) {
+      // Append ID manually to the form data
+      formData.append("id", client.id)
+      const result = await updateClientAction(formData)
+      if (result && "error" in result && result.error) {
         setError(result.error)
       } else {
         onClose()
@@ -100,7 +100,7 @@ export function LogPaymentModal({
               fontFamily: "system-ui, sans-serif",
             }}
           >
-            Log Payment
+            Edit Client
           </h2>
           <button
             onClick={onClose}
@@ -135,88 +135,92 @@ export function LogPaymentModal({
 
         <form action={handleSubmit}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {/* Project */}
+            {/* Name */}
             <div>
               <label style={labelStyle}>
-                Project <span style={{ color: "#991B1B" }}>*</span>
+                Full Name <span style={{ color: "#991B1B" }}>*</span>
               </label>
-              <select
-                name="project_id"
+              <input
+                name="name"
                 required
-                defaultValue={defaultProjectId || ""}
+                defaultValue={client.name}
+                style={inputStyle}
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label style={labelStyle}>
+                Email Address <span style={{ color: "#991B1B" }}>*</span>
+              </label>
+              <input
+                name="email"
+                type="email"
+                required
+                defaultValue={client.email}
+                style={inputStyle}
+              />
+            </div>
+
+            {/* Phone & Company */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div>
+                <label style={labelStyle}>Phone</label>
+                <input
+                  name="phone"
+                  defaultValue={client.phone || ""}
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Company</label>
+                <input
+                  name="company"
+                  defaultValue={client.company || ""}
+                  style={inputStyle}
+                />
+              </div>
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label style={labelStyle}>Tags (comma-separated)</label>
+              <input
+                name="tags"
+                defaultValue={client.tags?.join(", ") || ""}
+                placeholder="design, branding, dev"
+                style={inputStyle}
+              />
+            </div>
+
+            {/* Status */}
+            <div>
+              <label style={labelStyle}>Status</label>
+              <select
+                name="status"
+                defaultValue={client.status}
                 style={{ ...inputStyle, cursor: "pointer" }}
               >
-                <option value="">Select a project…</option>
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.title}
-                  </option>
-                ))}
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="archived">Archived</option>
               </select>
-            </div>
-
-            {/* Amount & Date */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <div>
-                <label style={labelStyle}>
-                  Amount ($) <span style={{ color: "#991B1B" }}>*</span>
-                </label>
-                <input
-                  name="amount"
-                  type="number"
-                  required
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  style={inputStyle}
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>
-                  Date Received <span style={{ color: "#991B1B" }}>*</span>
-                </label>
-                <input
-                  name="date_received"
-                  type="date"
-                  required
-                  defaultValue={new Date().toISOString().split("T")[0]}
-                  style={inputStyle}
-                />
-              </div>
-            </div>
-
-            {/* Method & Status */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <div>
-                <label style={labelStyle}>Payment Method</label>
-                <input name="method" placeholder="e.g. Bank transfer, UPI" style={inputStyle} />
-              </div>
-              <div>
-                <label style={labelStyle}>Status</label>
-                <select
-                  name="status"
-                  defaultValue="paid"
-                  style={{ ...inputStyle, cursor: "pointer" }}
-                >
-                  <option value="paid">Paid</option>
-                  <option value="pending">Pending</option>
-                  <option value="overdue">Overdue</option>
-                </select>
-              </div>
             </div>
 
             {/* Notes */}
             <div>
-              <label style={labelStyle}>Notes</label>
+              <label style={labelStyle}>Internal Notes</label>
               <textarea
                 name="notes"
-                placeholder="e.g. Advance for phase 1"
-                rows={2}
-                style={{ ...inputStyle, resize: "vertical", minHeight: 52 }}
+                defaultValue={client.notes || ""}
+                rows={3}
+                style={{
+                  ...inputStyle,
+                  resize: "vertical",
+                  minHeight: 70,
+                }}
               />
             </div>
-
-
           </div>
 
           {/* Actions */}
@@ -261,7 +265,7 @@ export function LogPaymentModal({
                 opacity: isPending ? 0.7 : 1,
               }}
             >
-              {isPending ? "Saving…" : "Log Payment"}
+              {isPending ? "Saving…" : "Save Changes"}
             </button>
           </div>
         </form>

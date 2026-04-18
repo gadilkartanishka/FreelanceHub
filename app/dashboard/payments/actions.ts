@@ -3,7 +3,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { uploadPaymentProofServer } from '@/lib/supabase/storage-server'
 
 export async function createPaymentAction(formData: FormData) {
   const supabase = await createClient()
@@ -16,21 +15,6 @@ export async function createPaymentAction(formData: FormData) {
   const method = (formData.get('method') as string) || null
   const status = (formData.get('status') as string) || 'pending'
   const notes = (formData.get('notes') as string) || null
-  
-  // Handle proof upload
-  const proofFile = formData.get('proof') as File
-  let proof_url = null
-  
-  if (proofFile && proofFile.size > 0) {
-    // We need a temporary ID or just use a timestamp-based name if we don't have the final ID yet
-    // Supabase insert returns the inserted row, so we can update it after, 
-    // or just generate a UUID here.
-    const tempId = crypto.randomUUID()
-    const { path, error: uploadError } = await uploadPaymentProofServer(proofFile, tempId)
-    if (!uploadError) {
-      proof_url = path
-    }
-  }
 
   const { error } = await supabase.from('payments').insert({
     project_id,
@@ -38,7 +22,6 @@ export async function createPaymentAction(formData: FormData) {
     date_received,
     method,
     status,
-    proof_url,
     notes,
   })
 
@@ -64,16 +47,7 @@ export async function updatePaymentAction(formData: FormData) {
   const status = (formData.get('status') as string) || 'pending'
   const notes = (formData.get('notes') as string) || null
 
-  // Handle proof upload
-  const proofFile = formData.get('proof') as File
   let updateData: any = { amount, date_received, method, status, notes }
-  
-  if (proofFile && proofFile.size > 0) {
-    const { path, error: uploadError } = await uploadPaymentProofServer(proofFile, id)
-    if (!uploadError) {
-      updateData.proof_url = path
-    }
-  }
 
   const { error } = await supabase
     .from('payments')

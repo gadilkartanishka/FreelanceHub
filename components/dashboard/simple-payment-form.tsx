@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { X } from "lucide-react"
 import { colors } from "@/lib/colors"
 import { createPaymentAction } from "@/app/dashboard/payments/actions"
 import type { Project } from "@/lib/types"
@@ -30,101 +29,59 @@ const inputStyle: React.CSSProperties = {
   boxSizing: "border-box",
 }
 
-export function LogPaymentModal({
-  open,
-  onClose,
+export function SimplePaymentForm({
   projects,
-  defaultProjectId,
 }: {
-  open: boolean
-  onClose: () => void
   projects: Pick<Project, "id" | "title">[]
-  defaultProjectId?: string
 }) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
-
-  if (!open) return null
+  const [success, setSuccess] = useState<boolean>(false)
 
   const handleSubmit = (formData: FormData) => {
     setError(null)
+    setSuccess(false)
     startTransition(async () => {
       const result = await createPaymentAction(formData)
-      if (result && 'error' in result && result.error) {
+      if (result && "error" in result && result.error) {
         setError(result.error)
       } else {
-        onClose()
+        setSuccess(true)
+        const form = document.getElementById("simple-payment-form") as HTMLFormElement
+        if (form) form.reset()
       }
     })
   }
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(34,34,59,0.3)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose()
-      }}
-    >
-      <div
-        style={{
-          background: "#fff",
-          border: BORDER,
-          width: 460,
-          maxHeight: "85vh",
-          overflowY: "auto",
-          padding: "28px",
-        }}
-      >
-        {/* Header */}
-        <div
+    <div style={{ maxWidth: 600, margin: "40px auto", padding: "0 20px" }}>
+      <div style={{ marginBottom: 24 }}>
+        <h1
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 24,
+            fontSize: 24,
+            fontWeight: 600,
+            color: colors.navy,
+            fontFamily: "system-ui, sans-serif",
+            margin: "0 0 8px 0",
           }}
         >
-          <h2
-            style={{
-              fontSize: 16,
-              fontWeight: 600,
-              color: colors.navy,
-              fontFamily: "system-ui, sans-serif",
-            }}
-          >
-            Log Payment
-          </h2>
-          <button
-            onClick={onClose}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: "#9A8C98",
-              padding: 4,
-            }}
-          >
-            <X size={16} />
-          </button>
-        </div>
+          Add a Payment
+        </h1>
+        <p style={{ color: "#9A8C98", fontSize: 14, margin: 0 }}>
+          Record a payment received for one of your active projects.
+        </p>
+      </div>
 
+      <div style={{ background: "#fff", border: BORDER, borderRadius: 8, padding: 32 }}>
         {error && (
           <div
             style={{
-              padding: "8px 12px",
-              borderRadius: 3,
+              padding: "12px",
+              borderRadius: 4,
               background: "#FEF2F2",
               color: "#991B1B",
-              fontSize: 12,
-              marginBottom: 16,
+              fontSize: 13,
+              marginBottom: 24,
               border: "1px solid #FEE2E2",
               fontFamily: "system-ui, sans-serif",
             }}
@@ -133,8 +90,25 @@ export function LogPaymentModal({
           </div>
         )}
 
-        <form action={handleSubmit}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {success && (
+          <div
+            style={{
+              padding: "12px",
+              borderRadius: 4,
+              background: "#ECFDF5",
+              color: "#065F46",
+              fontSize: 13,
+              marginBottom: 24,
+              border: "1px solid #D1FAE5",
+              fontFamily: "system-ui, sans-serif",
+            }}
+          >
+            Payment logged successfully!
+          </div>
+        )}
+
+        <form id="simple-payment-form" action={handleSubmit}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             {/* Project */}
             <div>
               <label style={labelStyle}>
@@ -143,7 +117,6 @@ export function LogPaymentModal({
               <select
                 name="project_id"
                 required
-                defaultValue={defaultProjectId || ""}
                 style={{ ...inputStyle, cursor: "pointer" }}
               >
                 <option value="">Select a project…</option>
@@ -156,7 +129,7 @@ export function LogPaymentModal({
             </div>
 
             {/* Amount & Date */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               <div>
                 <label style={labelStyle}>
                   Amount ($) <span style={{ color: "#991B1B" }}>*</span>
@@ -186,7 +159,7 @@ export function LogPaymentModal({
             </div>
 
             {/* Method & Status */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               <div>
                 <label style={labelStyle}>Payment Method</label>
                 <input name="method" placeholder="e.g. Bank transfer, UPI" style={inputStyle} />
@@ -211,51 +184,34 @@ export function LogPaymentModal({
               <textarea
                 name="notes"
                 placeholder="e.g. Advance for phase 1"
-                rows={2}
-                style={{ ...inputStyle, resize: "vertical", minHeight: 52 }}
+                rows={3}
+                style={{ ...inputStyle, resize: "vertical" }}
               />
             </div>
-
-
+            
+            {/* Proof disabled as per request */}
           </div>
 
-          {/* Actions */}
           <div
             style={{
+              marginTop: 32,
+              paddingTop: 24,
+              borderTop: BORDER,
               display: "flex",
               justifyContent: "flex-end",
-              gap: 10,
-              marginTop: 24,
-              paddingTop: 16,
-              borderTop: "1px solid #F0EDE9",
             }}
           >
-            <button
-              type="button"
-              onClick={onClose}
-              style={{
-                padding: "7px 16px",
-                fontSize: 12,
-                border: BORDER,
-                background: "#fff",
-                color: colors.indigo,
-                borderRadius: 3,
-                cursor: "pointer",
-                fontFamily: "system-ui, sans-serif",
-              }}
-            >
-              Cancel
-            </button>
             <button
               type="submit"
               disabled={isPending}
               style={{
-                padding: "7px 16px",
-                fontSize: 12,
+                padding: "10px 24px",
+                fontSize: 13,
+                fontWeight: 500,
                 border: "none",
                 background: colors.navy,
                 color: "#fff",
-                borderRadius: 3,
+                borderRadius: 4,
                 cursor: isPending ? "not-allowed" : "pointer",
                 fontFamily: "system-ui, sans-serif",
                 opacity: isPending ? 0.7 : 1,

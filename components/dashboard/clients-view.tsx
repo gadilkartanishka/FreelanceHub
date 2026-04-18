@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { inviteClientAction } from "@/app/dashboard/clients/actions"
 import type { Client, Project } from "@/lib/types"
 import { CreateClientModal } from "@/components/dashboard/create-client-modal"
+import { EditClientModal } from "@/components/dashboard/edit-client-modal"
 
 const BORDER = "1px solid #E8E4E0"
 const BORDER_LIGHT = "1px solid #F5F2EF"
@@ -66,6 +67,7 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
   const [isPending, startTransition] = useTransition()
   const [inviteStatus, setInviteStatus] = useState<{ id: string; success?: boolean; error?: string } | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
 
   const filtered = initialClients.filter((c) => {
     const matchesSearch =
@@ -270,6 +272,23 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                 
                 <div style={{ display: "flex", gap: 10 }}>
                   <button
+                    onClick={() => setShowEditModal(true)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      padding: "8px 16px",
+                      background: "#fff",
+                      border: BORDER,
+                      fontSize: 12,
+                      borderRadius: 4,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Edit Client
+                  </button>
+                  
+                  <button
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -363,6 +382,11 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
       <CreateClientModal
         open={showCreateModal}
         onClose={() => setShowCreateModal(false)}
+      />
+      <EditClientModal
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        client={selected}
       />
     </div>
   )
