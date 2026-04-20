@@ -9,15 +9,15 @@ import type { Client, Project } from "@/lib/types"
 import { CreateClientModal } from "@/components/dashboard/create-client-modal"
 import { EditClientModal } from "@/components/dashboard/edit-client-modal"
 
-const BORDER = "1px solid #E8E4E0"
-const BORDER_LIGHT = "1px solid #F5F2EF"
+const BORDER = "1px solid #E2E8F0"
+const BORDER_LIGHT = "1px solid #F1F5F9"
 
 const STATUS_STYLE: Record<
   string,
   { bg: string; color: string; label: string }
 > = {
   active: { bg: "#ECFDF5", color: "#065F46", label: "Active" },
-  inactive: { bg: "#F5F2EF", color: "#9A8C98", label: "Inactive" },
+  inactive: { bg: "#F1F5F9", color: "#64748B", label: "Inactive" },
   archived: { bg: "#F1F5F9", color: "#64748B", label: "Archived" },
 }
 
@@ -25,7 +25,7 @@ const PROJECT_STATUS_COLOR: Record<string, string> = {
   "in_progress": "#92400E",
   "in_review": "#1E40AF",
   "completed": "#065F46",
-  "pending": "#9A8C98",
+  "pending": "#64748B",
 }
 
 function StatusPill({ status }: { status: string }) {
@@ -172,7 +172,7 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                   left: 9,
                   top: "50%",
                   transform: "translateY(-50%)",
-                  color: "#9A8C98",
+                  color: "#64748B",
                 }}
               />
               <input
@@ -183,9 +183,9 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                   width: "100%",
                   padding: "6px 10px 6px 28px",
                   fontSize: 12,
-                  border: "1px solid #F0EDE9",
+                  border: "1px solid #E2E8F0",
                   borderRadius: 3,
-                  background: "#FAFAFA",
+                  background: "#F8FAFC",
                   color: colors.navy,
                   fontFamily: "system-ui, sans-serif",
                   outline: "none",
@@ -217,7 +217,7 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                     filter === f.value
                       ? `2px solid ${colors.navy}`
                       : "2px solid transparent",
-                  color: filter === f.value ? colors.navy : "#9A8C98",
+                  color: filter === f.value ? colors.navy : "#64748B",
                   cursor: "pointer",
                   fontWeight: filter === f.value ? 500 : 400,
                   marginBottom: -1,
@@ -230,7 +230,7 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
 
           <div style={{ overflowY: "auto", flex: 1 }}>
             {filtered.length === 0 ? (
-              <p style={{ padding: "20px 16px", fontSize: 12, color: "#9A8C98" }}>No clients found.</p>
+              <p style={{ padding: "20px 16px", fontSize: 12, color: "#64748B" }}>No clients found.</p>
             ) : (
               filtered.map((client) => (
                 <div
@@ -240,7 +240,7 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                     padding: "12px 16px",
                     borderBottom: BORDER_LIGHT,
                     cursor: "pointer",
-                    background: selected?.id === client.id ? "#F5F2EF" : "transparent",
+                    background: selected?.id === client.id ? "#F1F5F9" : "transparent",
                     transition: "background 0.1s",
                   }}
                 >
@@ -248,7 +248,7 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                     <span style={{ fontSize: 12, fontWeight: 500 }}>{client.name}</span>
                     <StatusPill status={client.status} />
                   </div>
-                  <p style={{ fontSize: 11, color: "#9A8C98", margin: 0 }}>{client.company || "No company"}</p>
+                  <p style={{ fontSize: 11, color: "#64748B", margin: 0 }}>{client.company || "No company"}</p>
                 </div>
               ))
             )}
@@ -256,16 +256,16 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
         </div>
 
         {/* Right — detail */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "28px 32px", background: "#FAFAFA" }}>
+        <div style={{ flex: 1, overflowY: "auto", padding: "28px 32px", background: "#F8FAFC" }}>
           {selected ? (
             <>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
                 <div>
                   <h2 style={{ fontSize: 20, fontWeight: 600, margin: "0 0 4px 0" }}>{selected.name}</h2>
-                  <p style={{ fontSize: 13, color: "#9A8C98", margin: 0 }}>{selected.company}</p>
+                  <p style={{ fontSize: 13, color: "#64748B", margin: 0 }}>{selected.company}</p>
                   <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                     {selected.tags?.map(t => (
-                      <span key={t} style={{ fontSize: 10, padding: "2px 6px", background: "#E8E4E0", borderRadius: 2 }}>{t}</span>
+                      <span key={t} style={{ fontSize: 10, padding: "2px 6px", background: "#E2E8F0", borderRadius: 2 }}>{t}</span>
                     ))}
                   </div>
                 </div>
@@ -344,14 +344,14 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
               <div style={{ background: "#fff", padding: 20, border: BORDER }}>
                 <h3 style={{ fontSize: 11, fontWeight: 600, color: colors.rose, textTransform: "uppercase", margin: "0 0 16px 0" }}>Projects</h3>
                 {selected.projects.length === 0 ? (
-                  <p style={{ fontSize: 13, color: "#9A8C98" }}>No projects for this client yet.</p>
+                  <p style={{ fontSize: 13, color: "#64748B" }}>No projects for this client yet.</p>
                 ) : (
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
                       <tr style={{ borderBottom: BORDER, textAlign: "left" }}>
-                        <th style={{ padding: "8px 0", fontSize: 11, color: "#9A8C98" }}>Project</th>
-                        <th style={{ padding: "8px 0", fontSize: 11, color: "#9A8C98" }}>Status</th>
-                        <th style={{ padding: "8px 0", fontSize: 11, color: "#9A8C98", textAlign: "right" }}>Value</th>
+                        <th style={{ padding: "8px 0", fontSize: 11, color: "#64748B" }}>Project</th>
+                        <th style={{ padding: "8px 0", fontSize: 11, color: "#64748B" }}>Status</th>
+                        <th style={{ padding: "8px 0", fontSize: 11, color: "#64748B", textAlign: "right" }}>Value</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -359,7 +359,7 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                         <tr key={p.id} style={{ borderBottom: BORDER_LIGHT }}>
                           <td style={{ padding: "12px 0", fontSize: 13, fontWeight: 500 }}>{p.title}</td>
                           <td style={{ padding: "12px 0" }}>
-                            <span style={{ fontSize: 10, padding: "2px 8px", background: "#F5F2EF", color: PROJECT_STATUS_COLOR[p.status] || "#666" }}>
+                            <span style={{ fontSize: 10, padding: "2px 8px", background: "#F1F5F9", color: PROJECT_STATUS_COLOR[p.status] || "#666" }}>
                               {p.status}
                             </span>
                           </td>
@@ -372,7 +372,7 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
               </div>
             </>
           ) : (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#9A8C98" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#64748B" }}>
               Select a client to view details
             </div>
           )}

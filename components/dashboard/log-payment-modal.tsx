@@ -6,12 +6,12 @@ import { colors } from "@/lib/colors"
 import { createPaymentAction } from "@/app/dashboard/payments/actions"
 import type { Project } from "@/lib/types"
 
-const BORDER = "1px solid #E8E4E0"
+const BORDER = "1px solid #E2E8F0"
 
 const labelStyle: React.CSSProperties = {
   fontSize: 11,
   fontWeight: 500,
-  color: "#4A4E69",
+  color: "#334155",
   fontFamily: "system-ui, sans-serif",
   marginBottom: 4,
   display: "block",
@@ -21,9 +21,9 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "8px 12px",
   fontSize: 12.5,
-  border: "1px solid #F0EDE9",
+  border: "1px solid #E2E8F0",
   borderRadius: 3,
-  background: "#FAFAFA",
+  background: "#F8FAFC",
   color: colors.navy,
   fontFamily: "system-ui, sans-serif",
   outline: "none",
@@ -108,7 +108,7 @@ export function LogPaymentModal({
               background: "none",
               border: "none",
               cursor: "pointer",
-              color: "#9A8C98",
+              color: "#64748B",
               padding: 4,
             }}
           >
@@ -227,7 +227,7 @@ export function LogPaymentModal({
               gap: 10,
               marginTop: 24,
               paddingTop: 16,
-              borderTop: "1px solid #F0EDE9",
+              borderTop: "1px solid #E2E8F0",
             }}
           >
             <button

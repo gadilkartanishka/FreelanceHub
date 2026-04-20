@@ -7,8 +7,8 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { LogPaymentModal } from "./log-payment-modal"
 import type { Project } from "@/lib/types"
 
-const BORDER = "1px solid #E8E4E0"
-const BORDER_LIGHT = "1px solid #F5F2EF"
+const BORDER = "1px solid #E2E8F0"
+const BORDER_LIGHT = "1px solid #F1F5F9"
 
 type Status = "paid" | "pending" | "overdue"
 
@@ -29,7 +29,7 @@ const STATUS_STYLE: Record<
   { bg: string; color: string; label: string }
 > = {
   paid: { bg: "#ECFDF5", color: "#065F46", label: "Paid" },
-  pending: { bg: "#F5F2EF", color: "#9A8C98", label: "Pending" },
+  pending: { bg: "#F1F5F9", color: "#64748B", label: "Pending" },
   overdue: { bg: "#FEF2F2", color: "#991B1B", label: "Overdue" },
 }
 
@@ -186,7 +186,7 @@ export function PaymentsView({
                   left: 9,
                   top: "50%",
                   transform: "translateY(-50%)",
-                  color: "#9A8C98",
+                  color: "#64748B",
                 }}
               />
               <input
@@ -197,9 +197,9 @@ export function PaymentsView({
                   width: "100%",
                   padding: "6px 10px 6px 28px",
                   fontSize: 12,
-                  border: "1px solid #F0EDE9",
+                  border: "1px solid #E2E8F0",
                   borderRadius: 3,
-                  background: "#FAFAFA",
+                  background: "#F8FAFC",
                   color: colors.navy,
                   fontFamily: "system-ui, sans-serif",
                   outline: "none",
@@ -238,7 +238,7 @@ export function PaymentsView({
                       ? f.value === "overdue"
                         ? "#991B1B"
                         : colors.navy
-                      : "#9A8C98",
+                      : "#64748B",
                   cursor: "pointer",
                   fontWeight: filter === f.value ? 500 : 400,
                   marginBottom: -1,
@@ -257,7 +257,7 @@ export function PaymentsView({
                 style={{
                   padding: "20px 16px",
                   fontSize: 12,
-                  color: "#9A8C98",
+                  color: "#64748B",
                   fontFamily: "system-ui, sans-serif",
                 }}
               >
@@ -275,7 +275,7 @@ export function PaymentsView({
                       borderBottom: BORDER_LIGHT,
                       cursor: "pointer",
                       background: isSelected
-                        ? "#F5F2EF"
+                        ? "#F1F5F9"
                         : payment.status === "overdue"
                           ? "#FFFBFB"
                           : "transparent",
@@ -288,7 +288,7 @@ export function PaymentsView({
                     }}
                     onMouseEnter={(e) => {
                       if (!isSelected)
-                        e.currentTarget.style.background = "#FAFAFA"
+                        e.currentTarget.style.background = "#F8FAFC"
                     }}
                     onMouseLeave={(e) => {
                       if (!isSelected)
@@ -319,7 +319,7 @@ export function PaymentsView({
                     <p
                       style={{
                         fontSize: 11,
-                        color: "#9A8C98",
+                        color: "#64748B",
                         fontFamily: "system-ui, sans-serif",
                         marginBottom: 6,
                         marginTop: 0,
@@ -339,7 +339,7 @@ export function PaymentsView({
                       <span
                         style={{
                           fontSize: 11,
-                          color: "#9A8C98",
+                          color: "#64748B",
                           fontFamily: "system-ui, sans-serif",
                         }}
                       >
@@ -348,7 +348,7 @@ export function PaymentsView({
                       <span
                         style={{
                           fontSize: 11,
-                          color: payment.status === "overdue" ? "#991B1B" : "#9A8C98",
+                          color: payment.status === "overdue" ? "#991B1B" : "#64748B",
                           fontFamily: "system-ui, sans-serif",
                         }}
                       >
@@ -368,7 +368,7 @@ export function PaymentsView({
             flex: 1,
             overflowY: "auto",
             padding: "28px 32px",
-            background: "#FAFAFA",
+            background: "#F8FAFC",
           }}
         >
           {selected ? (
@@ -408,7 +408,7 @@ export function PaymentsView({
                   <p
                     style={{
                       fontSize: 13,
-                      color: "#9A8C98",
+                      color: "#64748B",
                       fontFamily: "system-ui, sans-serif",
                       margin: "4px 0 0 0",
                     }}
@@ -441,7 +441,7 @@ export function PaymentsView({
                     <p
                       style={{
                         fontSize: 11,
-                        color: "#9A8C98",
+                        color: "#64748B",
                         marginBottom: 6,
                         marginTop: 0,
                         fontFamily: "system-ui, sans-serif",
@@ -511,7 +511,7 @@ export function PaymentsView({
                 alignItems: "center",
                 justifyContent: "center",
                 height: "100%",
-                color: "#9A8C98",
+                color: "#64748B",
                 fontSize: 13,
               }}
             >

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { colors } from "@/lib/colors"
 
-const BORDER_LIGHT = "1px solid #F0EDE9"
+const BORDER_LIGHT = "1px solid #E2E8F0"
 const MIN_WIDTH = 180
 const MAX_WIDTH = 400
 const DEFAULT_WIDTH = 224
@@ -131,10 +131,10 @@ export function RightPanel() {
       style={{
         width,
         minWidth: width,
-        borderLeft: "1px solid #E8E4E0",
+        borderLeft: "1px solid #E2E8F0",
         overflowY: "auto" as const,
         padding: "24px 20px",
-        background: "#FAFAFA",
+        background: "#F8FAFC",
         display: "flex",
         flexDirection: "column",
         gap: 24,
@@ -159,7 +159,7 @@ export function RightPanel() {
         }}
         onMouseEnter={(e) => {
           if (!isDragging)
-            (e.currentTarget as HTMLDivElement).style.background = "#E8E4E0"
+            (e.currentTarget as HTMLDivElement).style.background = "#E2E8F0"
         }}
         onMouseLeave={(e) => {
           if (!isDragging)
@@ -200,7 +200,7 @@ export function RightPanel() {
               <span
                 style={{
                   fontSize: 11,
-                  color: "#9A8C98",
+                  color: "#64748B",
                   fontFamily: "system-ui, sans-serif",
                 }}
               >

@@ -10,7 +10,7 @@ interface ChatThreadProps {
   onClick?: () => void
 }
 
-const BORDER_LIGHT = "1px solid #F5F2EF"
+const BORDER_LIGHT = "1px solid #F1F5F9"
 
 export function ChatThread({
   name,
@@ -26,7 +26,7 @@ export function ChatThread({
         width: "100%",
         textAlign: "left",
         padding: "16px 20px",
-        background: active ? "#F5F2EF" : "transparent",
+        background: active ? "#F1F5F9" : "transparent",
         border: "none",
         borderBottom: BORDER_LIGHT,
         cursor: "pointer",
@@ -36,7 +36,7 @@ export function ChatThread({
         transition: "background 0.1s",
       }}
       onMouseEnter={(e) => {
-        if (!active) e.currentTarget.style.background = "#FAFAFA"
+        if (!active) e.currentTarget.style.background = "#F8FAFC"
       }}
       onMouseLeave={(e) => {
         if (!active) e.currentTarget.style.background = "transparent"
@@ -62,7 +62,7 @@ export function ChatThread({
         <span
           style={{
             fontSize: 11,
-            color: "#9A8C98",
+            color: "#64748B",
             fontFamily: "system-ui, sans-serif",
           }}
         >
@@ -72,7 +72,7 @@ export function ChatThread({
       <p
         style={{
           fontSize: 12,
-          color: "#9A8C98",
+          color: "#64748B",
           margin: 0,
           whiteSpace: "nowrap",
           overflow: "hidden",

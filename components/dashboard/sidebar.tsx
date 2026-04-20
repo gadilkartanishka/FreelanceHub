@@ -26,7 +26,7 @@ const NAV = [
   { href: "/dashboard/settings", label: "Settings", Icon: Settings },
 ]
 
-const BORDER = "1px solid #E8E4E0"
+const BORDER = "1px solid #E2E8F0"
 
 export function Sidebar({
   collapsed,
@@ -74,7 +74,8 @@ export function Sidebar({
       }}
     >
       {/* Logo */}
-      <div
+      <Link
+        href="/"
         style={{
           height: 52,
           padding: "0 16px",
@@ -83,6 +84,7 @@ export function Sidebar({
           alignItems: "center",
           justifyContent: collapsed ? "center" : "flex-start",
           width: "100%",
+          textDecoration: "none",
         }}
       >
         {collapsed ? (
@@ -103,7 +105,7 @@ export function Sidebar({
             </span>
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Nav */}
       <nav
@@ -128,8 +130,8 @@ export function Sidebar({
                 padding: collapsed ? "8px 0" : "8px 16px",
                 justifyContent: collapsed ? "center" : "flex-start",
                 textDecoration: "none",
-                color: active ? colors.navy : "#9A8C98",
-                background: active ? "#F5F2EF" : "transparent",
+                color: active ? colors.navy : "#64748B",
+                background: active ? "#F1F5F9" : "transparent",
                 fontFamily: "system-ui, sans-serif",
                 fontSize: 12.5,
                 fontWeight: active ? 500 : 400,
@@ -141,12 +143,12 @@ export function Sidebar({
               onMouseEnter={(e) => {
                 if (!active) {
                   e.currentTarget.style.color = colors.navy
-                  e.currentTarget.style.background = "#FAFAFA"
+                  e.currentTarget.style.background = "#F8FAFC"
                 }
               }}
               onMouseLeave={(e) => {
                 if (!active) {
-                  e.currentTarget.style.color = "#9A8C98"
+                  e.currentTarget.style.color = "#64748B"
                   e.currentTarget.style.background = "transparent"
                 }
               }}
@@ -186,14 +188,14 @@ export function Sidebar({
             border: "none",
             borderTop: BORDER,
             cursor: "pointer",
-            color: "#9A8C98",
+            color: "#64748B",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = colors.navy
-            e.currentTarget.style.background = "#FAFAFA"
+            e.currentTarget.style.background = "#F8FAFC"
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = "#9A8C98"
+            e.currentTarget.style.color = "#64748B"
             e.currentTarget.style.background = "transparent"
           }}
         >
@@ -206,7 +208,7 @@ export function Sidebar({
                 style={{
                   fontSize: 12.5,
                   fontFamily: "system-ui, sans-serif",
-                  color: "#9A8C98",
+                  color: "#64748B",
                 }}
               >
                 Collapse
@@ -241,7 +243,7 @@ export function Sidebar({
               minWidth: 26,
               border: BORDER,
               borderRadius: 3,
-              background: "#F5F2EF",
+              background: "#F1F5F9",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -272,7 +274,7 @@ export function Sidebar({
               <p
                 style={{
                   fontSize: 11,
-                  color: "#9A8C98",
+                  color: "#64748B",
                   fontFamily: "system-ui, sans-serif",
                   textTransform: "capitalize",
                 }}
@@ -296,12 +298,12 @@ export function Sidebar({
               background: "none",
               border: "none",
               cursor: "pointer",
-              color: "#9A8C98",
+              color: "#64748B",
               fontSize: 12,
               fontFamily: "system-ui, sans-serif",
             }}
             onMouseEnter={(e) => (e.currentTarget.style.color = colors.rose)}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#9A8C98")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#64748B")}
           >
             <LogOut size={14} />
             {!collapsed && <span>Sign out</span>}

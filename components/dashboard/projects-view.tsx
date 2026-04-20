@@ -6,8 +6,8 @@ import { colors } from "@/lib/colors"
 import { useRouter, useSearchParams } from "next/navigation"
 import { CreateProjectModal } from "./create-project-modal"
 
-const BORDER = "1px solid #E8E4E0"
-const BORDER_LIGHT = "1px solid #F5F2EF"
+const BORDER = "1px solid #E2E8F0"
+const BORDER_LIGHT = "1px solid #F1F5F9"
 
 type Status = "pending" | "in_progress" | "in_review" | "completed"
 
@@ -31,7 +31,7 @@ const STATUS_STYLE: Record<
   Status,
   { bg: string; color: string; label: string }
 > = {
-  pending: { bg: "#F5F2EF", color: "#9A8C98", label: "Pending" },
+  pending: { bg: "#F1F5F9", color: "#64748B", label: "Pending" },
   in_progress: { bg: "#FEF3E2", color: "#92400E", label: "In Progress" },
   in_review: { bg: "#EFF6FF", color: "#1E40AF", label: "In Review" },
   completed: { bg: "#ECFDF5", color: "#065F46", label: "Completed" },
@@ -88,7 +88,7 @@ function ProgressBar({
         <span
           style={{
             fontSize: 11,
-            color: "#9A8C98",
+            color: "#64748B",
             fontFamily: "system-ui, sans-serif",
           }}
         >
@@ -97,7 +97,7 @@ function ProgressBar({
         <span
           style={{
             fontSize: 11,
-            color: "#9A8C98",
+            color: "#64748B",
             fontFamily: "system-ui, sans-serif",
           }}
         >
@@ -107,7 +107,7 @@ function ProgressBar({
       <div
         style={{
           height: 3,
-          background: "#F0EDE9",
+          background: "#E2E8F0",
           borderRadius: 0,
           overflow: "hidden",
         }}
@@ -134,7 +134,7 @@ function ProgressBar({
         <span
           style={{
             fontSize: 11,
-            color: "#9A8C98",
+            color: "#64748B",
             fontFamily: "system-ui, sans-serif",
           }}
         >
@@ -144,7 +144,7 @@ function ProgressBar({
           style={{
             fontSize: 11,
             fontFamily: "system-ui, sans-serif",
-            color: overdue ? "#991B1B" : "#9A8C98",
+            color: overdue ? "#991B1B" : "#64748B",
           }}
         >
           ${Math.max(0, max - value).toLocaleString()} remaining
@@ -285,7 +285,7 @@ export function ProjectsView({
                   left: 9,
                   top: "50%",
                   transform: "translateY(-50%)",
-                  color: "#9A8C98",
+                  color: "#64748B",
                 }}
               />
               <input
@@ -296,9 +296,9 @@ export function ProjectsView({
                   width: "100%",
                   padding: "6px 10px 6px 28px",
                   fontSize: 12,
-                  border: "1px solid #F0EDE9",
+                  border: "1px solid #E2E8F0",
                   borderRadius: 3,
-                  background: "#FAFAFA",
+                  background: "#F8FAFC",
                   color: colors.navy,
                   fontFamily: "system-ui, sans-serif",
                   outline: "none",
@@ -337,7 +337,7 @@ export function ProjectsView({
                       ? f.value === "overdue"
                         ? "#991B1B"
                         : colors.navy
-                      : "#9A8C98",
+                      : "#64748B",
                   cursor: "pointer",
                   fontWeight: filter === f.value ? 500 : 400,
                   marginBottom: -1,
@@ -356,7 +356,7 @@ export function ProjectsView({
                 style={{
                   padding: "20px 16px",
                   fontSize: 12,
-                  color: "#9A8C98",
+                  color: "#64748B",
                   fontFamily: "system-ui, sans-serif",
                 }}
               >
@@ -380,7 +380,7 @@ export function ProjectsView({
                       borderBottom: BORDER_LIGHT,
                       cursor: "pointer",
                       background: isSelected
-                        ? "#F5F2EF"
+                        ? "#F1F5F9"
                         : project.overdue
                           ? "#FFFBFB"
                           : "transparent",
@@ -393,7 +393,7 @@ export function ProjectsView({
                     }}
                     onMouseEnter={(e) => {
                       if (!isSelected)
-                        e.currentTarget.style.background = "#FAFAFA"
+                        e.currentTarget.style.background = "#F8FAFC"
                     }}
                     onMouseLeave={(e) => {
                       if (!isSelected)
@@ -425,7 +425,7 @@ export function ProjectsView({
                     <p
                       style={{
                         fontSize: 11,
-                        color: "#9A8C98",
+                        color: "#64748B",
                         fontFamily: "system-ui, sans-serif",
                         marginBottom: 6,
                       }}
@@ -441,7 +441,7 @@ export function ProjectsView({
                       <span
                         style={{
                           fontSize: 11,
-                          color: project.overdue ? "#991B1B" : "#9A8C98",
+                          color: project.overdue ? "#991B1B" : "#64748B",
                           fontFamily: "system-ui, sans-serif",
                         }}
                       >
@@ -450,7 +450,7 @@ export function ProjectsView({
                       <span
                         style={{
                           fontSize: 11,
-                          color: "#9A8C98",
+                          color: "#64748B",
                           fontFamily: "system-ui, sans-serif",
                         }}
                       >
@@ -470,7 +470,7 @@ export function ProjectsView({
             flex: 1,
             overflowY: "auto",
             padding: "28px 32px",
-            background: "#FAFAFA",
+            background: "#F8FAFC",
           }}
         >
           {selected ? (
@@ -526,7 +526,7 @@ export function ProjectsView({
                     onClick={() => router.push(`/dashboard/clients`)}
                     style={{
                       fontSize: 12.5,
-                      color: "#9A8C98",
+                      color: "#64748B",
                       fontFamily: "system-ui, sans-serif",
                       background: "none",
                       border: "none",
@@ -593,7 +593,7 @@ export function ProjectsView({
                     <p
                       style={{
                         fontSize: 11,
-                        color: "#9A8C98",
+                        color: "#64748B",
                         marginBottom: 6,
                         fontFamily: "system-ui, sans-serif",
                       }}
@@ -688,11 +688,11 @@ export function ProjectsView({
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <Calendar size={12} color="#9A8C98" />
+                    <Calendar size={12} color="#64748B" />
                     <span
                       style={{
                         fontSize: 11,
-                        color: "#9A8C98",
+                        color: "#64748B",
                         fontFamily: "system-ui, sans-serif",
                       }}
                     >
@@ -700,11 +700,11 @@ export function ProjectsView({
                     </span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <DollarSign size={12} color="#9A8C98" />
+                    <DollarSign size={12} color="#64748B" />
                     <span
                       style={{
                         fontSize: 11,
-                        color: "#9A8C98",
+                        color: "#64748B",
                         fontFamily: "system-ui, sans-serif",
                       }}
                     >
@@ -740,7 +740,7 @@ export function ProjectsView({
                   <p
                     style={{
                       fontSize: 12,
-                      color: "#9A8C98",
+                      color: "#64748B",
                       fontFamily: "system-ui, sans-serif",
                       margin: 0,
                     }}
@@ -759,7 +759,7 @@ export function ProjectsView({
                           fontSize: 11,
                           color: colors.indigo,
                           fontFamily: "system-ui, sans-serif",
-                          background: "#FAFAFA",
+                          background: "#F8FAFC",
                           cursor: "pointer",
                         }}
                       >
@@ -796,7 +796,7 @@ export function ProjectsView({
                   <span
                     style={{
                       fontSize: 10,
-                      color: "#9A8C98",
+                      color: "#64748B",
                       fontFamily: "system-ui, sans-serif",
                       fontStyle: "italic",
                     }}
@@ -818,7 +818,7 @@ export function ProjectsView({
               </div>
             </>
           ) : (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#9A8C98", fontSize: 13 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#64748B", fontSize: 13 }}>
               Select a project to view details
             </div>
           )}

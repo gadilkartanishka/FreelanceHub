@@ -26,7 +26,7 @@ export function ChatBubble({ content, time, sender }: ChatBubbleProps) {
           maxWidth: "80%",
           padding: "10px 14px",
           borderRadius: 8,
-          background: isMe ? colors.navy : "#F5F2EF",
+          background: isMe ? colors.navy : "#F1F5F9",
           color: isMe ? "#fff" : colors.navy,
           fontSize: 13,
           lineHeight: 1.5,
@@ -38,7 +38,7 @@ export function ChatBubble({ content, time, sender }: ChatBubbleProps) {
       <span
         style={{
           fontSize: 10,
-          color: "#9A8C98",
+          color: "#64748B",
           fontFamily: "system-ui, sans-serif",
         }}
       >

@@ -8,7 +8,7 @@ import { ChatBubble } from "@/components/dashboard/chat-bubble"
 import { Search, Send, Paperclip, MoreVertical, Loader2 } from "lucide-react"
 import { sendMessageAction } from "@/app/dashboard/messages/actions"
 
-const BORDER = "1px solid #E8E4E0"
+const BORDER = "1px solid #E2E8F0"
 
 interface Message {
   id: string
@@ -154,8 +154,8 @@ export function MessagesView({ initialThreads, currentUserId }: MessagesViewProp
                 width: "100%",
                 padding: "8px 12px 8px 34px",
                 borderRadius: 4,
-                border: "1px solid #F0EDE9",
-                background: "#FAFAFA",
+                border: "1px solid #E2E8F0",
+                background: "#F8FAFC",
                 fontSize: 12,
                 outline: "none",
                 fontFamily: "system-ui, sans-serif",
@@ -168,7 +168,7 @@ export function MessagesView({ initialThreads, currentUserId }: MessagesViewProp
                 left: 10,
                 top: "50%",
                 transform: "translateY(-50%)",
-                color: "#9A8C98",
+                color: "#64748B",
               }}
             />
           </div>
@@ -176,7 +176,7 @@ export function MessagesView({ initialThreads, currentUserId }: MessagesViewProp
 
         <div style={{ flex: 1, overflowY: "auto", marginTop: 10 }}>
           {initialThreads.length === 0 ? (
-            <p style={{ padding: "20px", fontSize: 12, color: "#9A8C98" }}>No active project chats.</p>
+            <p style={{ padding: "20px", fontSize: 12, color: "#64748B" }}>No active project chats.</p>
           ) : (
             initialThreads.map((thread) => (
               <ChatThread
@@ -202,7 +202,7 @@ export function MessagesView({ initialThreads, currentUserId }: MessagesViewProp
         }}
       >
         {!activeThread ? (
-          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#9A8C98" }}>
+          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#64748B" }}>
             Select a project to start chatting
           </div>
         ) : (
@@ -234,7 +234,7 @@ export function MessagesView({ initialThreads, currentUserId }: MessagesViewProp
                 <p
                   style={{
                     fontSize: 11,
-                    color: "#9A8C98",
+                    color: "#64748B",
                     margin: 0,
                     fontFamily: "system-ui, sans-serif",
                   }}
@@ -247,7 +247,7 @@ export function MessagesView({ initialThreads, currentUserId }: MessagesViewProp
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  color: "#9A8C98",
+                  color: "#64748B",
                   padding: 4,
                 }}
               >
@@ -267,7 +267,7 @@ export function MessagesView({ initialThreads, currentUserId }: MessagesViewProp
             >
               {loading ? (
                 <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Loader2 className="animate-spin" size={20} color="#9A8C98" />
+                  <Loader2 className="animate-spin" size={20} color="#64748B" />
                 </div>
               ) : (
                 messages.map((msg) => (
@@ -302,7 +302,7 @@ export function MessagesView({ initialThreads, currentUserId }: MessagesViewProp
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    color: "#9A8C98",
+                    color: "#64748B",
                     display: "flex",
                     alignItems: "center",
                   }}
