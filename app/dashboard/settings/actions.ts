@@ -11,7 +11,6 @@ export async function updateProfileAction(formData: FormData) {
 
   const fullName = formData.get("full_name") as string
   const phone = (formData.get("phone") as string) || null
-  const bio = (formData.get("bio") as string) || null
   // Avatar handling could be added here if needed
 
   const { error } = await supabase
@@ -19,7 +18,6 @@ export async function updateProfileAction(formData: FormData) {
     .update({
       full_name: fullName,
       phone: phone,
-      bio: bio,
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id)

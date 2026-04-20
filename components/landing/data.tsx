@@ -25,48 +25,59 @@ export const heroItem = {
 export const featureRows = [
   {
     icon: UserRound,
-    title: "Every client has a clearer home",
+    title: "Clients, projects, and payments stay connected",
     description:
-      "Store key details, notes, and shared context in one place so client work feels easier to pick up and continue.",
+      "The dashboard reflects the real shape of your work, so you can move from revenue to deadlines to client context without losing track of what matters.",
   },
   {
     icon: Hourglass,
-    title: "Your weekly priorities stay in view",
+    title: "The overview tells you what actually needs attention",
     description:
-      "See what needs attention now, what is coming up next, and where timelines may need a closer look.",
+      "See revenue, active work, pending payments, overdue tasks, and upcoming deadlines in one calmer view instead of assembling that picture manually.",
   },
   {
     icon: MessagesSquare,
-    title: "Admin work stops breaking your flow",
+    title: "Less tab-hopping, less mental overhead",
     description:
-      "Handle follow-ups, status checks, and conversations in the same place instead of chasing updates across tools.",
+      "When follow-ups, status checks, and payment tracking live in the same workspace, the admin side of freelancing stops fragmenting your day.",
   },
 ]
 
 export const workflowSteps = [
   {
     number: "01",
-    title: "Set up the work clearly",
+    title: "Start with the essentials",
     description:
-      "Create a shared starting point for each engagement so the important details are easy to find from the beginning.",
+      "Add the client, define the project, and set the deadline so every engagement starts with clear context instead of scattered notes.",
   },
   {
     number: "02",
-    title: "Keep momentum through delivery",
+    title: "Track delivery in one workspace",
     description:
-      "Use one workspace to stay oriented while projects move, priorities shift, and deadlines get closer.",
+      "Use the dashboard to stay oriented as projects move forward, deadlines get closer, and priorities shift during the week.",
   },
   {
     number: "03",
-    title: "Wrap up without loose ends",
+    title: "Close out with fewer loose ends",
     description:
-      "Close the loop with communication and payment follow-ups while the project context is still right in front of you.",
+      "Wrap up with payment follow-ups, status visibility, and shared history still in front of you instead of buried across tools.",
   },
 ]
 
 export const stats = [
-  { value: "120+", label: "Freelancers onboarded" },
-  { value: "3.5k+", label: "Projects organized" },
-  { value: "96%", label: "Tasks delivered on time" },
-  { value: "$480k+", label: "Payments tracked" },
+  {
+    eyebrow: "Overview",
+    title: "A single view of revenue, project load, and risk.",
+    description: "The landing page now reflects the real dashboard instead of placeholder analytics.",
+  },
+  {
+    eyebrow: "Workflow",
+    title: "Built around active work, pending payments, and deadlines.",
+    description: "It mirrors the actual decisions freelancers need to make during the week.",
+  },
+  {
+    eyebrow: "Focus",
+    title: "More signal, fewer decorative stats and cards.",
+    description: "The product story stays grounded in the workspace you’ve actually built.",
+  },
 ]

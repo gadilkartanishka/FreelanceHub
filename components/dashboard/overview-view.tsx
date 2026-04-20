@@ -2,49 +2,21 @@
 
 import { useState } from "react"
 import { colors } from "@/lib/colors"
-import { Plus } from "lucide-react"
+import { AlertTriangle, Clock3, Plus, TrendingDown, TrendingUp } from "lucide-react"
 import { CreateProjectModal } from "@/components/dashboard/create-project-modal"
-
-const BORDER = "1px solid #E8E4E0"
-const BORDER_LIGHT = "1px solid #F5F2EF"
-
-type Status =
-  | "pending"
-  | "in_progress"
-  | "in_review"
-  | "completed"
-  | "paid"
-  | "overdue"
-
-const STATUS_STYLE: Record<
-  Status,
-  { bg: string; color: string; label: string }
-> = {
-  pending: { bg: "#F5F2EF", color: "#9A8C98", label: "Pending" },
-  in_progress: { bg: "#FEF3E2", color: "#92400E", label: "In Progress" },
-  in_review: { bg: "#EFF6FF", color: "#1E40AF", label: "In Review" },
-  completed: { bg: "#ECFDF5", color: "#065F46", label: "Completed" },
-  paid: { bg: "#ECFDF5", color: "#065F46", label: "Paid" },
-  overdue: { bg: "#FEF2F2", color: "#991B1B", label: "Overdue" },
-}
-
-type ProjectRow = {
-  name: string
-  client: string
-  status: Status
-  progress: number
-  deadline: string
-  value: string
-  overdue: boolean
-}
-
-type PaymentRow = {
-  client: string
-  project: string
-  amount: string
-  date: string
-  status: Status
-}
+import { UpcomingDeadlines, type DeadlineProject } from "@/components/dashboard/upcoming-deadlines"
+import {
+  AreaChart,
+  Area,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
+  XAxis,
+  YAxis,
+} from "recharts"
 
 type Metrics = {
   revenueThisMonth: number
@@ -53,462 +25,438 @@ type Metrics = {
   overdueProjects: number
 }
 
-function Pill({ status }: { status: Status }) {
-  const s = STATUS_STYLE[status]
-  return (
-    <span
-      style={{
-        display: "inline-block",
-        fontSize: 10,
-        fontWeight: 500,
-        padding: "2px 8px",
-        borderRadius: 2,
-        background: s.bg,
-        color: s.color,
-        fontFamily: "system-ui, sans-serif",
-      }}
-    >
-      {s.label}
-    </span>
-  )
+type RevenueData = { month: string; amount: number }
+type AttentionItem = {
+  id: string
+  title: string
+  subtitle: string
+  tone: "danger" | "warn" | "neutral"
+  value: string
+}
+type FocusStats = {
+  dueThisWeek: number
+  awaitingReview: number
+  unpaidInvoices: number
 }
 
-function SectionHead({ title, link }: { title: string; link: string }) {
+type RevenueTooltipProps = {
+  active?: boolean
+  label?: string
+  payload?: Array<{ value: number | string }>
+}
+
+function formatMoney(amount: number) {
+  return `$${amount.toLocaleString()}`
+}
+
+function RevenueTooltip({ active, payload, label }: RevenueTooltipProps) {
+  if (!active || !payload?.length) return null
   return (
     <div
       style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 16,
+        background: "#0F172A",
+        borderRadius: 10,
+        padding: "8px 12px",
+        fontFamily: "system-ui, sans-serif",
+        boxShadow: "0 10px 30px rgba(15, 23, 42, 0.18)",
       }}
     >
-      <span
+      <p
         style={{
-          fontSize: 11,
-          fontWeight: 600,
-          color: "#9A8C98",
+          margin: 0,
+          fontSize: 10,
+          color: "#94A3B8",
+          marginBottom: 2,
+          textTransform: "uppercase",
           letterSpacing: "0.06em",
-          textTransform: "uppercase" as const,
-          fontFamily: "system-ui, sans-serif",
         }}
       >
-        {title}
-      </span>
-      <a
-        href={link}
-        style={{
-          fontSize: 12,
-          color: "#9A8C98",
-          textDecoration: "none",
-          fontFamily: "system-ui, sans-serif",
-        }}
-      >
-        View all
-      </a>
+        {label}
+      </p>
+      <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#fff", letterSpacing: "-0.02em" }}>
+        {formatMoney(Number(payload[0].value))}
+      </p>
     </div>
   )
 }
 
-const thStyle: React.CSSProperties = {
-  textAlign: "left",
-  paddingBottom: 10,
-  fontSize: 11,
-  fontWeight: 500,
-  color: "#9A8C98",
-  letterSpacing: "0.04em",
-  fontFamily: "system-ui, sans-serif",
+function GoalRing({
+  revenueThisMonth,
+  monthlyGoal,
+  focusStats,
+}: {
+  revenueThisMonth: number
+  monthlyGoal: number
+  focusStats: FocusStats
+}) {
+  const achieved = Math.min(revenueThisMonth, monthlyGoal)
+  const remaining = Math.max(monthlyGoal - revenueThisMonth, 0)
+  const progress = monthlyGoal > 0 ? Math.min((revenueThisMonth / monthlyGoal) * 100, 100) : 0
+  const ringData = [
+    { name: "Achieved", value: Math.max(achieved, 0), fill: colors.rose },
+    { name: "Remaining", value: Math.max(remaining, 0), fill: "#E2E8F0" },
+  ]
+
+  return (
+    <div
+      style={{
+        background: "#fff",
+        border: "1px solid #F1F5F9",
+        borderRadius: 10,
+        padding: "18px",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 320,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 10 }}>
+        <div>
+          <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: colors.navy }}>Monthly goal</p>
+        </div>
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            color: progress >= 100 ? "#166534" : "#92400E",
+            background: progress >= 100 ? "#ECFDF5" : "#FFF7ED",
+            border: `1px solid ${progress >= 100 ? "#BBF7D0" : "#FED7AA"}`,
+            borderRadius: 999,
+            padding: "4px 8px",
+          }}
+        >
+          {Math.round(progress)}% reached
+        </div>
+      </div>
+
+      <div style={{ height: 210, position: "relative" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={ringData}
+              dataKey="value"
+              cx="50%"
+              cy="50%"
+              innerRadius="68%"
+              outerRadius="86%"
+              startAngle={90}
+              endAngle={-270}
+              stroke="none"
+            >
+              {ringData.map((entry) => (
+                <Cell key={entry.name} fill={entry.fill} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            textAlign: "center",
+            pointerEvents: "none",
+            width: "72%",
+          }}
+        >
+          <div style={{ fontSize: 28, fontWeight: 700, color: colors.navy, letterSpacing: "-0.04em", lineHeight: 1 }}>
+            {formatMoney(revenueThisMonth)}
+          </div>
+          <div style={{ marginTop: 8, fontSize: 11, color: "#64748B" }}>
+            of {formatMoney(monthlyGoal)}
+          </div>
+          <div style={{ marginTop: 12, fontSize: 11, fontWeight: 600, color: remaining === 0 ? "#166534" : "#C2410C" }}>
+            {remaining === 0 ? "Goal hit" : `${formatMoney(remaining)} to go`}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginTop: "auto" }}>
+        <div style={{ borderRadius: 8, background: "#F8FAFC", padding: "10px 12px" }}>
+          <div style={{ fontSize: 10, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Due</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: colors.navy, marginTop: 2 }}>{focusStats.dueThisWeek}</div>
+        </div>
+        <div style={{ borderRadius: 8, background: "#F8FAFC", padding: "10px 12px" }}>
+          <div style={{ fontSize: 10, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Review</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: colors.navy, marginTop: 2 }}>{focusStats.awaitingReview}</div>
+        </div>
+        <div style={{ borderRadius: 8, background: "#F8FAFC", padding: "10px 12px" }}>
+          <div style={{ fontSize: 10, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Unpaid</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: colors.navy, marginTop: 2 }}>{focusStats.unpaidInvoices}</div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
-const tdStyle: React.CSSProperties = {
-  padding: "11px 0",
-  color: colors.navy,
-  verticalAlign: "middle",
-  fontSize: 12.5,
-  fontFamily: "system-ui, sans-serif",
-  borderBottom: BORDER_LIGHT,
+function AttentionPanel({ items }: { items: AttentionItem[] }) {
+  const toneStyles = {
+    danger: { bg: "#FEF2F2", border: "#FECACA", text: "#991B1B" },
+    warn: { bg: "#FFF7ED", border: "#FED7AA", text: "#C2410C" },
+    neutral: { bg: "#F8FAFC", border: "#E2E8F0", text: "#475569" },
+  } as const
+
+  return (
+    <div
+      style={{
+        background: "#fff",
+        border: "1px solid #F1F5F9",
+        borderRadius: 10,
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ padding: "14px 18px", borderBottom: "1px solid #F8FAFC" }}>
+        <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: colors.navy }}>Attention needed</p>
+        <p style={{ margin: "2px 0 0", fontSize: 11, color: "#94A3B8" }}>Only the most important items</p>
+      </div>
+
+      <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+        {items.length === 0 ? (
+          <div style={{ padding: "18px 8px", textAlign: "center", fontSize: 12, color: "#94A3B8" }}>
+            No urgent issues right now
+          </div>
+        ) : (
+          items.map((item) => {
+            const tone = toneStyles[item.tone]
+            return (
+              <div
+                key={item.id}
+                style={{
+                  borderRadius: 10,
+                  border: `1px solid ${tone.border}`,
+                  background: tone.bg,
+                  padding: "12px 14px",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  gap: 12,
+                }}
+              >
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                    {item.tone === "danger" ? <AlertTriangle size={13} color={tone.text} /> : <Clock3 size={13} color={tone.text} />}
+                    <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: colors.navy }}>{item.title}</p>
+                  </div>
+                  <p style={{ margin: "4px 0 0", fontSize: 11, color: "#64748B", lineHeight: 1.45 }}>{item.subtitle}</p>
+                </div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: tone.text, whiteSpace: "nowrap" }}>{item.value}</div>
+              </div>
+            )
+          })
+        )}
+      </div>
+    </div>
+  )
 }
 
 export function OverviewView({
   metrics,
-  projects,
-  payments,
+  revenueData,
+  upcomingDeadlines,
   clients,
+  monthlyGoal,
+  attentionItems,
+  focusStats,
 }: {
   metrics: Metrics
-  projects: ProjectRow[]
-  payments: PaymentRow[]
+  revenueData: RevenueData[]
+  upcomingDeadlines: DeadlineProject[]
   clients: { id: string; name: string }[]
+  monthlyGoal: number
+  attentionItems: AttentionItem[]
+  focusStats: FocusStats
 }) {
   const [showProjectModal, setShowProjectModal] = useState(false)
 
   const today = new Date()
-  const dateStr = today.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  })
+  const dateStr = today.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+
+  const lastTwo = revenueData.slice(-2)
+  const prevAmt = lastTwo[0]?.amount ?? 0
+  const thisAmt = lastTwo[1]?.amount ?? metrics.revenueThisMonth
+  const revTrend = prevAmt > 0 ? Math.round(((thisAmt - prevAmt) / prevAmt) * 100) : null
 
   const METRICS = [
     {
       label: "Revenue this month",
-      value: `$${metrics.revenueThisMonth.toLocaleString()}`,
-      sub: metrics.revenueThisMonth > 0 ? "Current month total" : "No payments yet",
-      subColor: "#4A7C59",
+      value: formatMoney(metrics.revenueThisMonth),
+      sub: revTrend !== null ? `${revTrend >= 0 ? "+" : ""}${revTrend}% vs last month` : "Current month",
+      subPositive: revTrend === null || revTrend >= 0,
+      trending: revTrend !== null ? (revTrend >= 0 ? "up" : "down") : null,
       alert: false,
     },
     {
       label: "Active projects",
       value: String(metrics.activeProjects),
-      sub: metrics.activeProjects > 0 ? `${metrics.activeProjects} in progress` : "No active projects",
-      subColor: "#9A8C98",
+      sub: metrics.activeProjects > 0 ? `${metrics.activeProjects} in progress` : "None active",
+      subPositive: true,
+      trending: null,
       alert: false,
     },
     {
       label: "Pending payments",
-      value: `$${metrics.pendingPayments.toLocaleString()}`,
-      sub:
-        metrics.pendingPayments > 0
-          ? "Awaiting payment"
-          : "All clear",
-      subColor: "#92400E",
+      value: formatMoney(metrics.pendingPayments),
+      sub: metrics.pendingPayments > 0 ? "Awaiting payment" : "All clear",
+      subPositive: metrics.pendingPayments === 0,
+      trending: null,
       alert: metrics.pendingPayments > 0,
     },
     {
       label: "Overdue tasks",
       value: String(metrics.overdueProjects),
-      sub:
-        metrics.overdueProjects > 0
-          ? "Immediate attention needed"
-          : "No overdue tasks",
-      subColor: "#991B1B",
+      sub: metrics.overdueProjects > 0 ? "Needs attention" : "All on track",
+      subPositive: metrics.overdueProjects === 0,
+      trending: null,
       alert: metrics.overdueProjects > 0,
     },
   ]
 
-  const hasData = projects.length > 0 || payments.length > 0
-
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-        overflow: "hidden",
-      }}
-    >
-      {/* Topbar */}
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", fontFamily: "system-ui, sans-serif" }}>
       <div
         style={{
           height: 52,
-          padding: "0 28px",
+          padding: "0 24px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          borderBottom: BORDER,
+          borderBottom: "1px solid #F1F5F9",
           background: "#fff",
           flexShrink: 0,
         }}
       >
-        <span
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: colors.navy, letterSpacing: "-0.01em" }}>Overview</span>
+          <span style={{ fontSize: 12, color: "#CBD5E1" }}>·</span>
+          <span style={{ fontSize: 12, color: "#94A3B8" }}>{dateStr}</span>
+        </div>
+        <button
+          onClick={() => setShowProjectModal(true)}
           style={{
-            fontSize: 14,
+            display: "flex",
+            alignItems: "center",
+            gap: 5,
+            padding: "6px 14px",
+            background: colors.navy,
+            color: "#fff",
+            fontSize: 12,
             fontWeight: 600,
-            color: colors.navy,
-            letterSpacing: "-0.01em",
-            fontFamily: "system-ui, sans-serif",
+            cursor: "pointer",
+            borderRadius: 4,
+            border: "none",
           }}
         >
-          Overview
-        </span>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span
-            style={{
-              fontSize: 12,
-              color: "#9A8C98",
-              fontFamily: "system-ui, sans-serif",
-            }}
-          >
-            {dateStr}
-          </span>
-          <button
-            onClick={() => setShowProjectModal(true)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 5,
-              padding: "6px 14px",
-              background: colors.navy,
-              color: "#fff",
-              fontSize: 12,
-              cursor: "pointer",
-              fontFamily: "system-ui, sans-serif",
-              borderRadius: 3,
-              border: "none",
-            }}
-          >
-            <Plus size={11} strokeWidth={2.5} />
-            New project
-          </button>
-        </div>
+          <Plus size={11} strokeWidth={2.5} />
+          New project
+        </button>
       </div>
 
-      {/* Body */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "28px" }}>
-        {/* Metrics strip */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-            border: BORDER,
-            borderRight: "none",
-            marginBottom: 36,
-          }}
-        >
-          {METRICS.map(({ label, value, sub, subColor, alert }) => (
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: "18px 24px 24px",
+          background: "#F8FAFC",
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+        }}
+      >
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 10, flexShrink: 0 }}>
+          {METRICS.map(({ label, value, sub, subPositive, trending, alert }) => (
             <div
               key={label}
               style={{
-                padding: "20px 20px 18px",
-                borderRight: BORDER,
-                background: alert ? "#FFFBFB" : "#fff",
+                background: "#fff",
+                border: `1px solid ${alert ? "#FECACA" : "#F1F5F9"}`,
+                borderRadius: 8,
+                padding: "14px 16px",
+                position: "relative",
+                overflow: "hidden",
               }}
             >
-              <p
-                style={{
-                  fontSize: 11,
-                  color: "#9A8C98",
-                  marginBottom: 8,
-                  fontFamily: "system-ui, sans-serif",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                {label}
-              </p>
-              <p
-                style={{
-                  fontSize: 22,
-                  fontWeight: 600,
-                  color: alert ? subColor : colors.navy,
-                  letterSpacing: "-0.03em",
-                  marginBottom: 4,
-                  fontFamily: "system-ui, sans-serif",
-                }}
-              >
-                {value}
-              </p>
-              <p
-                style={{
-                  fontSize: 11,
-                  color: subColor,
-                  fontFamily: "system-ui, sans-serif",
-                }}
-              >
-                {sub}
-              </p>
+              {alert && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "#EF4444" }} />}
+              <p style={{ margin: "0 0 8px", fontSize: 11, fontWeight: 500, color: "#94A3B8", letterSpacing: "0.05em", textTransform: "uppercase" }}>{label}</p>
+              <p style={{ margin: "0 0 5px", fontSize: 22, fontWeight: 700, color: colors.navy, letterSpacing: "-0.03em", lineHeight: 1 }}>{value}</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                {trending === "up" && <TrendingUp size={10} color="#16A34A" />}
+                {trending === "down" && <TrendingDown size={10} color="#DC2626" />}
+                <span style={{ fontSize: 11, color: subPositive ? "#16A34A" : "#DC2626" }}>{sub}</span>
+              </div>
             </div>
           ))}
         </div>
 
-        {!hasData ? (
-          /* Empty state */
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.8fr) minmax(320px, 0.95fr)", gap: 10, flexShrink: 0 }}>
           <div
             style={{
-              textAlign: "center",
-              padding: "60px 20px",
-              border: BORDER,
-              background: "#FAFAFA",
+              background: "#fff",
+              border: "1px solid #F1F5F9",
+              borderRadius: 10,
+              padding: "16px 18px 12px",
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 320,
             }}
           >
-            <p
-              style={{
-                fontSize: 16,
-                fontWeight: 600,
-                color: colors.navy,
-                marginBottom: 8,
-                fontFamily: "system-ui, sans-serif",
-              }}
-            >
-              Welcome to FreelanceHub!
-            </p>
-            <p
-              style={{
-                fontSize: 13,
-                color: "#9A8C98",
-                marginBottom: 20,
-                fontFamily: "system-ui, sans-serif",
-              }}
-            >
-              Create your first client to get started.
-            </p>
-            <a
-              href="/dashboard/clients"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 5,
-                padding: "8px 18px",
-                background: colors.navy,
-                color: "#fff",
-                fontSize: 12,
-                fontFamily: "system-ui, sans-serif",
-                borderRadius: 3,
-                textDecoration: "none",
-              }}
-            >
-              <Plus size={12} />
-              Create your first client
-            </a>
-          </div>
-        ) : (
-          <>
-            {/* Projects table */}
-            {projects.length > 0 && (
-              <div style={{ marginBottom: 36 }}>
-                <SectionHead title="Active projects" link="/dashboard/projects" />
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ borderBottom: BORDER }}>
-                      <th style={{ ...thStyle, width: "26%" }}>Project</th>
-                      <th style={{ ...thStyle, width: "16%" }}>Client</th>
-                      <th style={{ ...thStyle, width: "13%" }}>Status</th>
-                      <th style={{ ...thStyle, width: "14%" }}>Progress</th>
-                      <th style={thStyle}>Deadline</th>
-                      <th style={{ ...thStyle, textAlign: "right" }}>Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {projects.map(
-                      ({
-                        name,
-                        client,
-                        status,
-                        progress,
-                        deadline,
-                        value,
-                        overdue,
-                      }) => (
-                        <tr
-                          key={name}
-                          style={{ background: overdue ? "#FFFBFB" : "transparent" }}
-                        >
-                          <td style={{ ...tdStyle, fontWeight: 500 }}>
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                              }}
-                            >
-                              {overdue && (
-                                <span
-                                  style={{
-                                    width: 6,
-                                    height: 6,
-                                    borderRadius: "50%",
-                                    background: "#991B1B",
-                                    flexShrink: 0,
-                                    display: "inline-block",
-                                  }}
-                                />
-                              )}
-                              {name}
-                            </div>
-                          </td>
-                          <td style={{ ...tdStyle, color: "#9A8C98" }}>{client}</td>
-                          <td style={tdStyle}>
-                            <Pill status={status} />
-                          </td>
-                          <td style={tdStyle}>
-                            <div
-                              style={{
-                                width: 56,
-                                height: 3,
-                                background: "#F0EDE9",
-                                overflow: "hidden",
-                                borderRadius: 0,
-                              }}
-                            >
-                              <div
-                                style={{
-                                  width: `${progress}%`,
-                                  height: "100%",
-                                  background: overdue ? "#991B1B" : colors.rose,
-                                }}
-                              />
-                            </div>
-                          </td>
-                          <td
-                            style={{
-                              ...tdStyle,
-                              color: overdue ? "#991B1B" : "#9A8C98",
-                              fontWeight: overdue ? 500 : 400,
-                            }}
-                          >
-                            {deadline}
-                          </td>
-                          <td style={{ ...tdStyle, textAlign: "right" }}>{value}</td>
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Payments table */}
-            {payments.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, flexShrink: 0 }}>
               <div>
-                <SectionHead title="Recent payments" link="/dashboard/payments" />
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ borderBottom: BORDER }}>
-                      <th style={{ ...thStyle, width: "26%" }}>Client</th>
-                      <th style={thStyle}>Project</th>
-                      <th style={thStyle}>Amount</th>
-                      <th style={thStyle}>Date</th>
-                      <th style={{ ...thStyle, textAlign: "right" }}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {payments.map(({ client, project, amount, date, status }) => (
-                      <tr
-                        key={`${client}-${date}-${amount}`}
-                        style={{
-                          background:
-                            status === "overdue" ? "#FFFBFB" : "transparent",
-                        }}
-                      >
-                        <td style={{ ...tdStyle, fontWeight: 500 }}>{client}</td>
-                        <td style={{ ...tdStyle, color: "#9A8C98" }}>{project}</td>
-                        <td
-                          style={{
-                            ...tdStyle,
-                            color: status === "overdue" ? "#991B1B" : colors.navy,
-                            fontWeight: status === "overdue" ? 500 : 400,
-                          }}
-                        >
-                          {amount}
-                        </td>
-                        <td style={{ ...tdStyle, color: "#9A8C98" }}>{date}</td>
-                        <td style={{ ...tdStyle, textAlign: "right" }}>
-                          <Pill status={status} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: colors.navy }}>Revenue trend</p>
+                <p style={{ margin: "2px 0 0", fontSize: 11, color: "#94A3B8" }}>Last 6 months</p>
               </div>
-            )}
-          </>
-        )}
+              {revTrend !== null && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                    padding: "3px 8px",
+                    background: revTrend >= 0 ? "#F0FDF4" : "#FEF2F2",
+                    border: `1px solid ${revTrend >= 0 ? "#BBF7D0" : "#FECACA"}`,
+                    borderRadius: 20,
+                  }}
+                >
+                  {revTrend >= 0 ? <TrendingUp size={11} color="#16A34A" /> : <TrendingDown size={11} color="#DC2626" />}
+                  <span style={{ fontSize: 11, fontWeight: 600, color: revTrend >= 0 ? "#16A34A" : "#DC2626" }}>
+                    {revTrend >= 0 ? "+" : ""}
+                    {revTrend}%
+                  </span>
+                </div>
+              )}
+            </div>
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={revenueData} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={colors.rose} stopOpacity={0.12} />
+                      <stop offset="100%" stopColor={colors.rose} stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F8FAFC" />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: "#94A3B8", fontSize: 10, fontFamily: "system-ui" }} dy={6} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94A3B8", fontSize: 10, fontFamily: "system-ui" }} tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`} />
+                  <RechartsTooltip content={<RevenueTooltip />} cursor={{ stroke: "#F1F5F9", strokeWidth: 1 }} />
+                  <Area type="monotone" dataKey="amount" stroke={colors.rose} strokeWidth={1.75} fill="url(#revGrad)" dot={false} activeDot={{ r: 4, fill: colors.rose, strokeWidth: 0 }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <GoalRing revenueThisMonth={metrics.revenueThisMonth} monthlyGoal={monthlyGoal} focusStats={focusStats} />
+        </div>
+
+        <div style={{ flexShrink: 0 }}>
+          <AttentionPanel items={attentionItems.slice(0, 3)} />
+        </div>
+
+        <div style={{ flexShrink: 0 }}>
+          <UpcomingDeadlines projects={upcomingDeadlines} />
+        </div>
       </div>
 
-      <CreateProjectModal
-        open={showProjectModal}
-        onClose={() => setShowProjectModal(false)}
-        clients={clients}
-      />
+      <CreateProjectModal open={showProjectModal} onClose={() => setShowProjectModal(false)} clients={clients} />
     </div>
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
+import type { User } from "@supabase/supabase-js"
 import Link from "next/link"
 import { Navbar } from "@/components/landing/navbar"
 import { Button } from "@/components/ui/button"
@@ -10,7 +11,7 @@ import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 
 export function HeroSection() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
