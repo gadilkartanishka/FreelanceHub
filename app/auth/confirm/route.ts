@@ -1,5 +1,5 @@
-import { type EmailOtpType } from '@supabase/ssr'
 import { type NextRequest } from 'next/server'
+import { type EmailOtpType } from '@supabase/supabase-js'
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'

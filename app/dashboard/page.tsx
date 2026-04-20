@@ -150,7 +150,6 @@ export default async function OverviewPage() {
   }
 
   const revenueData = Array.from(revenueByMonth.entries()).map(([month, amount]) => ({ month, amount }))
-  const cashFlowData = Array.from(cashFlowByMonth.values())
 
   const distributionMap = {
     pending: { name: "Pending", value: 0, fill: "#64748B" },
@@ -268,21 +267,9 @@ export default async function OverviewPage() {
     })
   }
 
-  const projectDistributionData = Object.values(distributionMap).filter((d) => d.value > 0)
   const sortedDeadlines = upcomingDeadlines
     .sort((a, b) => a.deadline.localeCompare(b.deadline))
     .slice(0, 5)
-
-  const recentActivity = [...paymentActivity, ...projectActivity]
-    .sort((a, b) => b.sortTime - a.sortTime)
-    .slice(0, 5)
-    .map((item) => ({
-      id: item.id,
-      title: item.title,
-      subtitle: item.subtitle,
-      timestamp: item.timestamp,
-      kind: item.kind,
-    }))
 
   const topAttentionItems = attentionItems
     .sort((a, b) => a.priority - b.priority)
@@ -317,13 +304,10 @@ export default async function OverviewPage() {
     <OverviewView
       metrics={metrics}
       revenueData={revenueData}
-      projectDistributionData={projectDistributionData}
       upcomingDeadlines={sortedDeadlines}
       clients={clients}
-      cashFlowData={cashFlowData}
       monthlyGoal={monthlyGoal}
       attentionItems={topAttentionItems}
-      recentActivity={recentActivity}
       focusStats={{
         dueThisWeek,
         awaitingReview,

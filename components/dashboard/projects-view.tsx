@@ -1,10 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Plus, Search, Calendar, DollarSign, ExternalLink } from "lucide-react"
+import { useState } from "react"
+import { Plus, Search, Calendar, DollarSign, ExternalLink, Pencil, Trash2 } from "lucide-react"
 import { colors } from "@/lib/colors"
 import { useRouter, useSearchParams } from "next/navigation"
 import { CreateProjectModal } from "./create-project-modal"
+import { EditProjectModal } from "./edit-project-modal"
+import { deleteProjectAction } from "@/app/dashboard/projects/actions"
 
 const BORDER = "1px solid #E2E8F0"
 const BORDER_LIGHT = "1px solid #F1F5F9"
@@ -167,32 +169,15 @@ export function ProjectsView({
 
   const [search, setSearch] = useState("")
   const [filter, setFilter] = useState<Status | "all" | "overdue">("all")
-  const [selected, setSelected] = useState<ProjectDisplay | null>(
-    initialProjects[0] || null
-  )
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
-
-  // Determine what project to select initially if client param is present
-  useEffect(() => {
-    if (clientParam) {
-      const match = initialProjects.find((p) => p.clientId === clientParam)
-      if (match) setSelected(match)
-    }
-  }, [clientParam, initialProjects])
-
-  // Sync selected with changes in initialProjects (if one gets created/deleted)
-  useEffect(() => {
-    if (selected) {
-      const match = initialProjects.find((p) => p.id === selected.id)
-      if (match) {
-        setSelected(match)
-      } else {
-        setSelected(initialProjects[0] || null)
-      }
-    } else {
-      setSelected(initialProjects[0] || null)
-    }
-  }, [initialProjects, selected])
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const selected =
+    initialProjects.find((p) => p.id === selectedId) ||
+    (clientParam ? initialProjects.find((p) => p.clientId === clientParam) : null) ||
+    initialProjects[0] ||
+    null
 
   const filtered = initialProjects.filter((p) => {
     const matchesSearch =
@@ -206,6 +191,23 @@ export function ProjectsView({
           : p.status === filter
     return matchesSearch && matchesFilter
   })
+
+  const handleDelete = async () => {
+    if (!selected || isDeleting) return
+    const confirmed = window.confirm(`Delete project "${selected.title}"? This action cannot be undone.`)
+    if (!confirmed) return
+
+    setIsDeleting(true)
+    const result = await deleteProjectAction(selected.id)
+    setIsDeleting(false)
+
+    if (result && "error" in result && result.error) {
+      window.alert(result.error)
+      return
+    }
+
+    router.refresh()
+  }
 
   return (
     <div
@@ -374,7 +376,7 @@ export function ProjectsView({
                 return (
                   <div
                     key={project.id}
-                    onClick={() => setSelected(project)}
+                    onClick={() => setSelectedId(project.id)}
                     style={{
                       padding: "12px 16px",
                       borderBottom: BORDER_LIGHT,
@@ -539,25 +541,67 @@ export function ProjectsView({
                     {selected.client}
                   </button>
                 </div>
-                <button
-                  onClick={() => router.push(`/dashboard/payments`)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 5,
-                    padding: "6px 14px",
-                    background: "transparent",
-                    color: colors.navy,
-                    fontSize: 12,
-                    cursor: "pointer",
-                    fontFamily: "system-ui, sans-serif",
-                    borderRadius: 3,
-                    border: BORDER,
-                  }}
-                >
-                  <ExternalLink size={11} />
-                  View payments
-                </button>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      padding: "6px 14px",
+                      background: "#fff",
+                      color: colors.navy,
+                      fontSize: 12,
+                      cursor: "pointer",
+                      fontFamily: "system-ui, sans-serif",
+                      borderRadius: 3,
+                      border: BORDER,
+                    }}
+                  >
+                    <Pencil size={11} />
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      padding: "6px 14px",
+                      background: "#fff",
+                      color: "#991B1B",
+                      fontSize: 12,
+                      cursor: isDeleting ? "not-allowed" : "pointer",
+                      fontFamily: "system-ui, sans-serif",
+                      borderRadius: 3,
+                      border: "1px solid #FECACA",
+                      opacity: isDeleting ? 0.7 : 1,
+                    }}
+                  >
+                    <Trash2 size={11} />
+                    {isDeleting ? "Deleting..." : "Delete"}
+                  </button>
+                  <button
+                    onClick={() => router.push(`/dashboard/payments`)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      padding: "6px 14px",
+                      background: "transparent",
+                      color: colors.navy,
+                      fontSize: 12,
+                      cursor: "pointer",
+                      fontFamily: "system-ui, sans-serif",
+                      borderRadius: 3,
+                      border: BORDER,
+                    }}
+                  >
+                    <ExternalLink size={11} />
+                    View payments
+                  </button>
+                </div>
               </div>
 
               {/* Stats strip */}
@@ -829,6 +873,11 @@ export function ProjectsView({
         open={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         clients={clients}
+      />
+      <EditProjectModal
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        project={selected}
       />
     </div>
   )

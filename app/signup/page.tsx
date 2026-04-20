@@ -2,7 +2,7 @@
 
 import { signUp } from "@/app/auth/actions"
 import { useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import Link from "next/link"
 import { Logo } from "@/components/ui/logo"
 import { Button } from "@/components/ui/button"
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select"
 import { Eye, EyeOff, User, Code } from "lucide-react"
 
-export default function SignupPage() {
+function SignupPageContent() {
   const [showPassword, setShowPassword] = useState(false)
   const searchParams = useSearchParams()
   const error = searchParams.get("error")
@@ -198,5 +198,13 @@ export default function SignupPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupPageContent />
+    </Suspense>
   )
 }

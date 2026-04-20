@@ -31,9 +31,11 @@ const BORDER = "1px solid #E2E8F0"
 export function Sidebar({
   collapsed,
   onToggle,
+  user,
 }: {
   collapsed: boolean
   onToggle: () => void
+  user?: { name: string; role: string }
 }) {
   const pathname = usePathname()
   const [profile, setProfile] = useState<{ full_name: string; role: string } | null>(null)
@@ -57,7 +59,9 @@ export function Sidebar({
 
   const initials = profile?.full_name
     ? profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-    : '??'
+    : user?.name
+      ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+      : '??'
 
   return (
     <aside
@@ -269,7 +273,7 @@ export function Sidebar({
                   textOverflow: "ellipsis",
                 }}
               >
-                {profile?.full_name || "Loading..."}
+                {profile?.full_name || user?.name || "Loading..."}
               </p>
               <p
                 style={{
@@ -279,7 +283,7 @@ export function Sidebar({
                   textTransform: "capitalize",
                 }}
               >
-                {profile?.role || "User"}
+                {profile?.role || user?.role || "User"}
               </p>
             </div>
           )}

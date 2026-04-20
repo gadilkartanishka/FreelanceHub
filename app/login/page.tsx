@@ -1,6 +1,5 @@
 "use client"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { Logo } from "@/components/ui/logo"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -8,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react"
-import { JSX, SVGProps, useState } from "react"
+import { JSX, SVGProps, Suspense, useState } from "react"
 
 const GoogleIcon = (
   props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
@@ -21,7 +20,7 @@ const GoogleIcon = (
 import { signIn } from "@/app/auth/actions"
 import { useSearchParams } from "next/navigation"
 
-export default function LoginPage() {
+function LoginPageContent() {
   const [isVisible, setIsVisible] = useState(false)
   const searchParams = useSearchParams()
   const error = searchParams.get("error")
@@ -163,5 +162,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageContent />
+    </Suspense>
   )
 }

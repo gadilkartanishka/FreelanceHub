@@ -1,11 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Plus, Search, Calendar, DollarSign, FileText } from "lucide-react"
+import { useState } from "react"
+import { Plus, Search, Pencil, Trash2 } from "lucide-react"
 import { colors } from "@/lib/colors"
 import { useRouter, useSearchParams } from "next/navigation"
 import { LogPaymentModal } from "./log-payment-modal"
+import { EditPaymentModal } from "./edit-payment-modal"
 import type { Project } from "@/lib/types"
+import { deletePaymentAction } from "@/app/dashboard/payments/actions"
 
 const BORDER = "1px solid #E2E8F0"
 const BORDER_LIGHT = "1px solid #F1F5F9"
@@ -73,32 +75,15 @@ export function PaymentsView({
 
   const [search, setSearch] = useState("")
   const [filter, setFilter] = useState<Status | "all">("all")
-  const [selected, setSelected] = useState<PaymentDisplay | null>(
-    initialPayments[0] || null
-  )
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [showLogModal, setShowLogModal] = useState(false)
-
-  // Determine what payment to select initially if id param is present
-  useEffect(() => {
-    if (paymentParam) {
-      const match = initialPayments.find((p) => p.id === paymentParam)
-      if (match) setSelected(match)
-    }
-  }, [paymentParam, initialPayments])
-
-  // Sync selected with changes in initialPayments
-  useEffect(() => {
-    if (selected) {
-      const match = initialPayments.find((p) => p.id === selected.id)
-      if (match) {
-        setSelected(match)
-      } else {
-        setSelected(initialPayments[0] || null)
-      }
-    } else {
-      setSelected(initialPayments[0] || null)
-    }
-  }, [initialPayments, selected])
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const selected =
+    initialPayments.find((p) => p.id === selectedId) ||
+    (paymentParam ? initialPayments.find((p) => p.id === paymentParam) : null) ||
+    initialPayments[0] ||
+    null
 
   const filtered = initialPayments.filter((p) => {
     const matchesSearch =
@@ -107,6 +92,23 @@ export function PaymentsView({
     const matchesFilter = filter === "all" ? true : p.status === filter
     return matchesSearch && matchesFilter
   })
+
+  const handleDelete = async () => {
+    if (!selected || isDeleting) return
+    const confirmed = window.confirm(`Delete payment of $${selected.amount.toLocaleString()} for "${selected.project}"?`)
+    if (!confirmed) return
+
+    setIsDeleting(true)
+    const result = await deletePaymentAction(selected.id)
+    setIsDeleting(false)
+
+    if (result && "error" in result && result.error) {
+      window.alert(result.error)
+      return
+    }
+
+    router.refresh()
+  }
 
   return (
     <div
@@ -269,7 +271,7 @@ export function PaymentsView({
                 return (
                   <div
                     key={payment.id}
-                    onClick={() => setSelected(payment)}
+                    onClick={() => setSelectedId(payment.id)}
                     style={{
                       padding: "12px 16px",
                       borderBottom: BORDER_LIGHT,
@@ -416,6 +418,48 @@ export function PaymentsView({
                     Recorded on {selected.date}
                   </p>
                 </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      padding: "6px 14px",
+                      background: "#fff",
+                      color: colors.navy,
+                      fontSize: 12,
+                      cursor: "pointer",
+                      fontFamily: "system-ui, sans-serif",
+                      borderRadius: 3,
+                      border: BORDER,
+                    }}
+                  >
+                    <Pencil size={11} />
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      padding: "6px 14px",
+                      background: "#fff",
+                      color: "#991B1B",
+                      fontSize: 12,
+                      cursor: isDeleting ? "not-allowed" : "pointer",
+                      fontFamily: "system-ui, sans-serif",
+                      borderRadius: 3,
+                      border: "1px solid #FECACA",
+                      opacity: isDeleting ? 0.7 : 1,
+                    }}
+                  >
+                    <Trash2 size={11} />
+                    {isDeleting ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
               </div>
 
               {/* Stats strip */}
@@ -526,6 +570,11 @@ export function PaymentsView({
         onClose={() => setShowLogModal(false)}
         projects={projects}
         // You can optionally pass defaultProjectId={...} here if filtering by a project
+      />
+      <EditPaymentModal
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        payment={selected}
       />
     </div>
   )

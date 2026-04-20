@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { Plus, Search, Mail, Phone, ExternalLink, Send } from "lucide-react"
+import { Plus, Search, Mail, Phone, ExternalLink, Send, Trash2 } from "lucide-react"
 import { colors } from "@/lib/colors"
 import { useRouter } from "next/navigation"
-import { inviteClientAction } from "@/app/dashboard/clients/actions"
+import { deleteClientAction, inviteClientAction } from "@/app/dashboard/clients/actions"
 import type { Client, Project } from "@/lib/types"
 import { CreateClientModal } from "@/components/dashboard/create-client-modal"
 import { EditClientModal } from "@/components/dashboard/edit-client-modal"
@@ -65,7 +65,7 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
   const [filter, setFilter] = useState<string | "all">("all")
   const [selected, setSelected] = useState<(Client & { projects: Project[] }) | null>(initialClients[0] || null)
   const [isPending, startTransition] = useTransition()
-  const [inviteStatus, setInviteStatus] = useState<{ id: string; success?: boolean; error?: string } | null>(null)
+  const [inviteStatus, setInviteStatus] = useState<{ id: string; success?: boolean; error?: string; message?: string } | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
 
@@ -80,17 +80,26 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
   const handleInvite = (id: string, email: string) => {
     startTransition(async () => {
       const res = await inviteClientAction(id, email)
-      if (res.success && res.inviteUrl) {
-        // Copy to clipboard
-        try {
-          await navigator.clipboard.writeText(res.inviteUrl)
-          setInviteStatus({ id, success: true, message: 'Link copied to clipboard!' })
-        } catch (err) {
-          setInviteStatus({ id, success: true, message: 'Link generated! (Copy manually below)' })
-        }
+      if (res.success) {
+        setInviteStatus({ id, success: true, message: "Invite flow acknowledged. Share client access from the portal setup." })
       } else {
-        setInviteStatus({ id, error: res.error || "Failed to generate link" })
+        setInviteStatus({ id, error: "Failed to generate link" })
       }
+    })
+  }
+
+  const handleDelete = async () => {
+    if (!selected || isPending) return
+    const confirmed = window.confirm(`Delete client "${selected.name}"? This will remove the client record.`)
+    if (!confirmed) return
+
+    startTransition(async () => {
+      const result = await deleteClientAction(selected.id)
+      if (result && "error" in result && result.error) {
+        setInviteStatus({ id: selected.id, error: result.error })
+        return
+      }
+      router.refresh()
     })
   }
 
@@ -289,6 +298,8 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                   </button>
                   
                   <button
+                    onClick={() => handleInvite(selected.id, selected.email)}
+                    disabled={isPending}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -300,7 +311,8 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                       fontWeight: 500,
                       borderRadius: 4,
                       border: "none",
-                      cursor: "pointer",
+                      cursor: isPending ? "not-allowed" : "pointer",
+                      opacity: isPending ? 0.7 : 1,
                     }}
                   >
                     <Send size={14} />
@@ -324,6 +336,28 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                     <ExternalLink size={14} />
                     View Projects
                   </button>
+
+                  <button
+                    onClick={handleDelete}
+                    disabled={isPending}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      padding: "8px 16px",
+                      background: "#fff",
+                      color: "#991B1B",
+                      fontSize: 12,
+                      fontWeight: 500,
+                      borderRadius: 4,
+                      border: "1px solid #FECACA",
+                      cursor: isPending ? "not-allowed" : "pointer",
+                      opacity: isPending ? 0.7 : 1,
+                    }}
+                  >
+                    <Trash2 size={14} />
+                    Delete
+                  </button>
                 </div>
               </div>
 
@@ -340,6 +374,21 @@ export function ClientsView({ initialClients }: ClientsViewProps) {
                   <p style={{ fontSize: 13, color: "#666", margin: 0 }}>{selected.notes || "No internal notes yet."}</p>
                 </div>
               </div>
+
+              {inviteStatus?.id === selected.id && (
+                <div
+                  style={{
+                    marginBottom: 24,
+                    padding: "10px 12px",
+                    border: "1px solid #E2E8F0",
+                    background: inviteStatus.error ? "#FEF2F2" : "#F8FAFC",
+                    color: inviteStatus.error ? "#991B1B" : "#475569",
+                    fontSize: 12,
+                  }}
+                >
+                  {inviteStatus.error || inviteStatus.message}
+                </div>
+              )}
 
               <div style={{ background: "#fff", padding: 20, border: BORDER }}>
                 <h3 style={{ fontSize: 11, fontWeight: 600, color: colors.rose, textTransform: "uppercase", margin: "0 0 16px 0" }}>Projects</h3>

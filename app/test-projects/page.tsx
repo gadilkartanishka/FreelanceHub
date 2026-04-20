@@ -1,7 +1,8 @@
-import { ProjectsView } from "@/components/dashboard/projects-view"
+import { Suspense } from "react"
+import { ProjectsView, type ProjectDisplay } from "@/components/dashboard/projects-view"
 
-export default function TestProjectsPage() {
-  const dummyProjects = [
+function TestProjectsPageContent() {
+  const dummyProjects: ProjectDisplay[] = [
     {
       id: "1",
       title: "E-commerce Redesign",
@@ -59,5 +60,13 @@ export default function TestProjectsPage() {
     <div style={{ background: "#F8FAFC", minHeight: "100vh" }}>
       <ProjectsView initialProjects={dummyProjects} clients={dummyClients} />
     </div>
+  )
+}
+
+export default function TestProjectsPage() {
+  return (
+    <Suspense fallback={null}>
+      <TestProjectsPageContent />
+    </Suspense>
   )
 }
