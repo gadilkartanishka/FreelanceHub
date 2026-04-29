@@ -47,7 +47,7 @@ export function Navbar() {
             <form action={signOut}>
               <Button
                 size="default"
-                className="h-11 rounded-full bg-[#2a2838] px-7 text-white hover:bg-[#1f1d2c]"
+                className="h-11 rounded-full border border-transparent bg-[#2a2838] px-7 text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-[#2563eb] hover:via-[#7c3aed] hover:to-[#ec4899] hover:text-white hover:shadow-[0_12px_34px_rgba(124,58,237,0.45)]"
               >
                 Sign out
               </Button>
@@ -57,7 +57,7 @@ export function Navbar() {
               <Link href="/signup">
                 <Button
                   size="default"
-                  className="h-11 rounded-full border border-white/25 bg-white/8 px-6 text-white/90 hover:bg-white/15"
+                  className="h-11 rounded-full border border-white/25 bg-white/8 px-6 text-white/90 transition-all duration-300 hover:-translate-y-0.5 hover:border-transparent hover:bg-gradient-to-r hover:from-[#2563eb] hover:via-[#7c3aed] hover:to-[#ec4899] hover:text-white hover:shadow-[0_12px_34px_rgba(124,58,237,0.45)]"
                 >
                   Sign up
                 </Button>
@@ -65,7 +65,7 @@ export function Navbar() {
               <Link href="/login">
                 <Button
                   size="default"
-                  className="h-12 rounded-full bg-[var(--color-navy)] px-7 text-[var(--color-cream)] hover:bg-[#151726]"
+                  className="h-12 rounded-full border border-transparent bg-[var(--color-navy)] px-7 text-[var(--color-cream)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-[#2563eb] hover:via-[#7c3aed] hover:to-[#ec4899] hover:text-white hover:shadow-[0_12px_34px_rgba(124,58,237,0.45)]"
                 >
                   Log in
                 </Button>

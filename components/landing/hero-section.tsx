@@ -43,7 +43,9 @@ export function HeroSection() {
             </motion.div>
 
             <motion.h1
-              variants={heroItem}
+              initial={{ opacity: 0, y: 48 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.15, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
               className="mt-6 max-w-4xl text-4xl leading-[1.02] font-medium tracking-tight text-white sm:text-5xl lg:text-6xl"
             >
               You already deliver.
@@ -52,20 +54,24 @@ export function HeroSection() {
             </motion.h1>
 
             <motion.p
-              variants={heroItem}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0, delay: 0.58 }}
               className="mt-4 max-w-xl text-sm leading-6 text-white/78 sm:text-base"
             >
               One clean workspace for clients, projects, and payments.
             </motion.p>
 
             <motion.div
-              variants={heroItem}
+              initial={{ opacity: 0, x: -46 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.1, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
               className="mt-8 flex flex-col gap-4 sm:flex-row"
             >
               <Link href={user ? "/dashboard" : "/login"}>
                 <Button
                   size="lg"
-                  className="h-12 rounded-full bg-[var(--color-navy)] px-7 text-[var(--color-cream)] hover:bg-[#151726]"
+                  className="h-12 rounded-full border border-transparent bg-[var(--color-navy)] px-7 text-[var(--color-cream)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-[#2563eb] hover:via-[#7c3aed] hover:to-[#ec4899] hover:text-white hover:shadow-[0_12px_34px_rgba(124,58,237,0.45)]"
                 >
                   {user ? "Go to Dashboard" : "Start managing smarter"}
                   <ArrowRight className="size-4" />
@@ -75,9 +81,9 @@ export function HeroSection() {
           </motion.div>
 
           <motion.div
-            variants={heroItem}
-            initial="hidden"
-            animate="show"
+            initial={{ opacity: 0, x: 90 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="relative z-20 mt-12 w-full max-w-5xl"
           >
             <div className="mx-auto w-full rounded-[30px] border border-white/40 bg-white/14 p-2 shadow-[0_40px_120px_rgba(16,28,64,0.45)] backdrop-blur-sm">
