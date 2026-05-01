@@ -26,7 +26,7 @@ export function Navbar() {
   }, [])
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 mx-auto w-full max-w-7xl px-6 pt-4 sm:px-10 lg:px-12">
+    <nav className="fixed inset-x-0 top-0 z-50 mx-auto w-full max-w-[1400px] px-3 pt-2 sm:px-5 lg:px-6">
       <div
         className={`rounded-xl px-3 py-2 transition-all duration-300 ${
           scrolled ? "bg-transparent shadow-none backdrop-blur-0" : "bg-transparent"

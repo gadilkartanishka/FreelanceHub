@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Eye, EyeOff, ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export function LoginPage() {
   const router = useRouter()
@@ -28,7 +29,15 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-screen w-screen items-center justify-center bg-slate-100 p-6">
-      <div className="flex h-[80vh] w-full max-w-6xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
+      <div className="relative flex h-[80vh] w-full max-w-6xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
+      <div className="absolute top-5 left-5 z-20">
+        <button
+          onClick={() => router.push("/")}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 transition-all hover:bg-gray-200"
+        >
+          <ArrowLeft className="h-5 w-5 text-gray-700" />
+        </button>
+      </div>
       <div className="flex flex-1 items-center justify-center bg-white">
         <div className="w-full max-w-sm p-6">
           <div className="mb-8">
@@ -85,13 +94,14 @@ export function LoginPage() {
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center space-x-2 text-sm text-gray-600">
-                <input
-                  type="checkbox"
-                  name="rememberMe"
+              <label htmlFor="rememberMe" className="flex items-center space-x-2 text-sm text-gray-600">
+                <Checkbox
+                  id="rememberMe"
                   checked={formData.rememberMe}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600"
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, rememberMe: checked === true }))
+                  }
+                  className="border-gray-400 bg-white data-[state=checked]:border-[#22223B] data-[state=checked]:bg-white data-[state=checked]:text-[#22223B]"
                 />
                 <span>Remember me</span>
               </label>
@@ -157,15 +167,6 @@ export function LoginPage() {
       </div>
 
       <div className="relative flex-1 overflow-hidden bg-slate-50">
-        <div className="absolute top-6 left-6 z-10">
-          <button
-            onClick={() => router.push("/")}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-black/20 backdrop-blur-sm transition-all hover:bg-black/30"
-          >
-            <ArrowLeft className="h-5 w-5 text-white" />
-          </button>
-        </div>
-
         <div className="absolute inset-0">
           <img
             src="/login%20img.png"
