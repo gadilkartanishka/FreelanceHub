@@ -1,210 +1,144 @@
 "use client"
 
-import { signUp } from "@/app/auth/actions"
-import { useSearchParams } from "next/navigation"
-import { Suspense, useState } from "react"
-import Link from "next/link"
-import { Logo } from "@/components/ui/logo"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Eye, EyeOff, User, Code } from "lucide-react"
+import { useState } from "react"
+import { Eye, EyeOff, ArrowLeft } from "lucide-react"
+import { useRouter } from "next/navigation"
 
-function SignupPageContent() {
+export default function SignupPage() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
-  const searchParams = useSearchParams()
-  const error = searchParams.get("error")
-  const message = searchParams.get("message")
-  const inviteCode = searchParams.get("code")
-  const inviteEmail = searchParams.get("email")
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    agree: false,
+  })
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log("Signup submitted:", formData)
+  }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F2E9E4] py-12">
-      <div className="w-full max-w-sm space-y-6 rounded-sm border border-[#E8E4E0] bg-white px-8 py-10 shadow-sm">
-        {/* Header */}
-        <div className="space-y-3 text-center">
-          <Logo className="mx-auto h-10 w-10" />
-          <div>
-            <h2 className="text-xl font-semibold tracking-tight text-[#22223B]">
-              {inviteCode ? "Join Workspace" : "Create an account"}
-            </h2>
-            <p className="mt-1 text-sm text-[#9A8C98]">
-              {inviteCode 
-                ? "Sign up to access your private client portal" 
-                : "Get started with FreelanceHub for free"}
-            </p>
+    <div className="flex min-h-screen w-screen items-center justify-center bg-slate-100 p-6">
+      <div className="flex h-[80vh] w-full max-w-6xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
+        <div className="flex flex-1 items-center justify-center bg-white">
+          <div className="w-full max-w-sm p-6">
+            <div className="mb-8">
+              <h1 className="mb-2 text-2xl font-bold text-gray-900">Create Account</h1>
+              <p className="text-sm text-gray-600">
+                Already have an account?{" "}
+                <button
+                  onClick={() => router.push("/login")}
+                  className="font-medium text-blue-600 hover:text-blue-700"
+                >
+                  Log in
+                </button>
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">Full Name</label>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleInputChange}
+                  placeholder="Full name"
+                  className="w-full rounded-xl border border-gray-300 px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Email Address"
+                  className="w-full rounded-xl border border-gray-300 px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Password"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-2.5 pr-12 outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 hover:bg-gray-100"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5 text-gray-500" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-gray-500" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <label className="flex items-center space-x-2 text-sm text-gray-600">
+                <input
+                  type="checkbox"
+                  name="agree"
+                  checked={formData.agree}
+                  onChange={handleInputChange}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600"
+                />
+                <span>I agree to Terms and Privacy Policy</span>
+              </label>
+
+              <button
+                type="submit"
+                className="w-full rounded-xl bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+              >
+                Create Account
+              </button>
+            </form>
           </div>
         </div>
 
-        {error && (
-          <div className="rounded-sm bg-red-50 p-3 text-xs text-red-600 border border-red-100">
-            {error}
-          </div>
-        )}
-
-        {message && (
-          <div className="rounded-sm bg-emerald-50 p-4 text-xs text-emerald-800 border border-emerald-100 flex flex-col gap-1.5 animate-in fade-in slide-in-from-top-1">
-            <p className="font-semibold">Check your email</p>
-            <p>{message}</p>
-          </div>
-        )}
-
-        {/* Fields */}
-        <form action={signUp} className="space-y-4">
-          {/* Hidden Invite Code */}
-          <input type="hidden" name="invite_code" value={inviteCode || ""} />
-
-          <div className="space-y-1.5">
-            <Label
-              htmlFor="role"
-              className="text-xs font-medium text-[#4A4E69]"
+        <div className="relative flex-1 overflow-hidden bg-slate-50">
+          <div className="absolute top-6 left-6 z-10">
+            <button
+              onClick={() => router.push("/")}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-black/20 backdrop-blur-sm transition-all hover:bg-black/30"
             >
-              I am a
-            </Label>
-            {inviteCode ? (
-              <div className="flex items-center gap-2 rounded-sm border border-[#F0EDE9] bg-[#F5F2EF] p-2 text-xs text-[#22223B]">
-                <Code size={14} />
-                <span>Client (Joining Workspace)</span>
-                <input type="hidden" name="role" value="client" />
-              </div>
-            ) : (
-              <Select name="role" defaultValue="freelancer">
-                <SelectTrigger
-                  id="role"
-                  className="border-[#F0EDE9] bg-[#FAFAFA] text-[#22223B] focus:ring-[#9A8C98]/10 [&>span]:flex [&>span]:items-center [&>span]:gap-2"
-                >
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="freelancer">
-                    <User size={14} />
-                    <span>Freelancer</span>
-                  </SelectItem>
-                  <SelectItem value="client">
-                    <Code size={14} />
-                    <span>Client</span>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            )}
+              <ArrowLeft className="h-5 w-5 text-white" />
+            </button>
           </div>
 
-          <div className="space-y-1.5">
-            <Label
-              htmlFor="full_name"
-              className="text-xs font-medium text-[#4A4E69]"
-            >
-              Full name
-            </Label>
-            <Input
-              id="full_name"
-              name="full_name"
-              required
-              className="border-[#F0EDE9] bg-[#FAFAFA] text-[#22223B] focus-visible:border-[#9A8C98] focus-visible:ring-[#9A8C98]/10"
+          <div className="absolute inset-0">
+            <img
+              src="/login%20img.png"
+              alt="Brand visual"
+              className="h-full w-full bg-slate-900 object-contain"
             />
           </div>
-
-          <div className="space-y-1.5">
-            <Label
-              htmlFor="email"
-              className="text-xs font-medium text-[#4A4E69]"
-            >
-              Email address
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              required
-              defaultValue={inviteEmail || ""}
-              className="border-[#F0EDE9] bg-[#FAFAFA] text-[#22223B] placeholder:text-[#C9ADA7] focus-visible:border-[#9A8C98] focus-visible:ring-[#9A8C98]/10"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label
-              htmlFor="password"
-              className="text-xs font-medium text-[#4A4E69]"
-            >
-              Password
-            </Label>
-            <div className="relative">
-              <Input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                className="border-[#F0EDE9] bg-[#FAFAFA] pe-9 text-[#22223B] focus-visible:border-[#9A8C98] focus-visible:ring-[#9A8C98]/10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((p) => !p)}
-                className="absolute inset-y-0 end-0 flex w-9 items-center justify-center text-[#9A8C98] hover:text-[#22223B]"
-              >
-                {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-              </button>
-            </div>
-            <p className="mt-1.5 text-[10px] leading-relaxed text-[#9A8C98]">
-              Must be at least 8 characters with an uppercase letter, lowercase letter, and a number.
-            </p>
-          </div>
-
-          <div className="flex items-start gap-2 pt-1">
-            <Checkbox
-              id="terms"
-              required
-              className="mt-0.5 border-[#C9ADA7] data-[state=checked]:border-[#22223B] data-[state=checked]:bg-[#22223B]"
-            />
-            <label
-              htmlFor="terms"
-              className="text-xs leading-relaxed text-[#9A8C98]"
-            >
-              I agree to the{" "}
-              <Link href="#" className="text-[#22223B] hover:underline">
-                Terms
-              </Link>{" "}
-              and{" "}
-              <Link href="#" className="text-[#22223B] hover:underline">
-                Privacy Policy
-              </Link>
-            </label>
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full bg-[#22223B] text-white hover:bg-[#4A4E69]"
-          >
-            Create free account
-          </Button>
-        </form>
-
-        {/* Footer */}
-        <p className="text-center text-xs text-[#9A8C98]">
-          Already have an account?{" "}
-          <Link
-            href="/login"
-            className="font-medium text-[#22223B] hover:underline"
-          >
-            Sign in
-          </Link>
-        </p>
+        </div>
       </div>
     </div>
   )
 }
 
-export default function SignupPage() {
-  return (
-    <Suspense fallback={null}>
-      <SignupPageContent />
-    </Suspense>
-  )
-}
