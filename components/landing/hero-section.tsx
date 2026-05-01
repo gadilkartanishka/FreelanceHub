@@ -25,9 +25,9 @@ export function HeroSection() {
     <ShaderBackground>
       <Navbar />
       <section className="relative isolate min-h-screen overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(140%_120%_at_50%_0%,rgba(202,229,255,0.7)_0%,rgba(152,181,237,0.34)_38%,rgba(75,83,121,0.56)_100%)]" />
-        <div className="absolute -top-24 left-1/2 h-[540px] w-[900px] -translate-x-1/2 rounded-full bg-white/18 blur-3xl" />
-        <div className="absolute bottom-[-180px] left-1/2 h-[420px] w-[1200px] -translate-x-1/2 rounded-full bg-white/30 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(140%_120%_at_50%_0%,rgba(202,229,255,0.55)_0%,rgba(152,181,237,0.28)_28%,rgba(74,78,105,0.62)_54%,rgba(34,34,59,0.88)_100%)]" />
+        <div className="absolute -top-24 left-1/2 h-[540px] w-[900px] -translate-x-1/2 rounded-full bg-[#9a8c98]/16 blur-3xl" />
+        <div className="absolute bottom-[-180px] left-1/2 h-[420px] w-[1200px] -translate-x-1/2 rounded-full bg-[#22223b]/46 blur-3xl" />
         <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center px-6 pt-28 pb-0 sm:px-10 lg:px-12">
           <motion.div
             variants={heroContainer}
@@ -39,18 +39,22 @@ export function HeroSection() {
               variants={heroItem}
               className="inline-flex items-center rounded-full border border-white/35 bg-white/20 px-4 py-1.5 text-xs font-medium tracking-tight text-white/90 backdrop-blur-sm"
             >
-              Built for serious freelance teams
+              Skip the Chaos
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 48 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.15, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-6 max-w-4xl text-4xl leading-[1.02] font-medium tracking-tight text-white sm:text-5xl lg:text-6xl"
+              transition={{
+                duration: 1.15,
+                delay: 0.45,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="mt-6 max-w-4xl text-4xl font-medium leading-[1.03] tracking-tight text-white sm:text-5xl lg:text-6xl"
             >
-              You already deliver.
+              Your Freelance Business,
               <br />
-              Start running it like a studio.
+              Finally Organised
             </motion.h1>
 
             <motion.p
@@ -59,13 +63,18 @@ export function HeroSection() {
               transition={{ duration: 0, delay: 0.58 }}
               className="mt-4 max-w-xl text-sm leading-6 text-white/78 sm:text-base"
             >
-              One clean workspace for clients, projects, and payments.
+              Manage clients, payments and deadlines — without the chaos of
+              five different apps.
             </motion.p>
 
             <motion.div
               initial={{ opacity: 0, x: -46 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1.1, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              transition={{
+                duration: 1.1,
+                delay: 0.9,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               className="mt-8 flex flex-col gap-4 sm:flex-row"
             >
               <Link href={user ? "/dashboard" : "/login"}>
@@ -99,7 +108,7 @@ export function HeroSection() {
                     alt="FreelanceHub workspace dashboard"
                     fill
                     priority
-                    className="object-contain object-top bg-slate-100"
+                    className="bg-slate-100 object-contain object-top"
                   />
                 </div>
               </div>
@@ -107,9 +116,10 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-52 bg-[linear-gradient(to_top,rgba(242,233,228,0.88),rgba(242,233,228,0))]" />
-        <div className="pointer-events-none absolute -bottom-16 left-[8%] z-30 h-44 w-44 rounded-full bg-white/65 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 right-[8%] z-30 h-56 w-56 rounded-full bg-white/70 blur-3xl" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-56 bg-[linear-gradient(to_top,rgba(255,255,255,0.96),rgba(255,255,255,0))]" />
+        <div className="pointer-events-none absolute -bottom-16 left-[8%] z-30 h-44 w-44 rounded-full bg-white/85 blur-3xl" />
+        <div className="pointer-events-none absolute right-[8%] -bottom-20 z-30 h-56 w-56 rounded-full bg-white/90 blur-3xl" />
+        <div className="pointer-events-none absolute inset-x-0 -bottom-1 z-40 h-2 bg-white" />
       </section>
     </ShaderBackground>
   )
