@@ -30,7 +30,7 @@ export function CtaSection() {
                 <Link href="/login">
                 <Button
                   size="lg"
-                  className="h-12 rounded-full bg-[var(--color-navy)] px-6 text-[var(--color-cream)] hover:bg-[var(--color-indigo)]"
+                  className="h-12 rounded-full bg-[var(--color-navy)] px-6 text-[var(--color-cream)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-[#2563eb] hover:via-[#7c3aed] hover:to-[#ec4899] hover:text-white hover:shadow-[0_12px_34px_rgba(124,58,237,0.45)]"
                 >
                   Get Started
                   <ArrowRight className="size-4" />

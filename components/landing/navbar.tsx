@@ -42,19 +42,19 @@ export function Navbar() {
             scrolled ? "text-[#4A4E69]" : "text-white/75"
           }`}
         >
-          <Link href="#" className={scrolled ? "text-[#22223B]" : "text-white"}>
+          <Link href="#home" className={scrolled ? "text-[#22223B]" : "text-white"}>
             Home
           </Link>
-          <Link href="#" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
+          <Link href="#how-it-works" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
             How it works
           </Link>
-          <Link href="#" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
+          <Link href="#platforms" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
             Platforms
           </Link>
-          <Link href="#" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
+          <Link href="#referrals" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
             Referrals
           </Link>
-          <Link href="#" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
+          <Link href="#faq" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
             FAQ
           </Link>
         </div>

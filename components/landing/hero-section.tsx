@@ -116,10 +116,9 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-56 bg-[linear-gradient(to_top,rgba(255,255,255,0.96),rgba(255,255,255,0))]" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-72 bg-[linear-gradient(to_top,rgba(255,255,255,1),rgba(255,255,255,0))]" />
         <div className="pointer-events-none absolute -bottom-16 left-[8%] z-30 h-44 w-44 rounded-full bg-white/85 blur-3xl" />
         <div className="pointer-events-none absolute right-[8%] -bottom-20 z-30 h-56 w-56 rounded-full bg-white/90 blur-3xl" />
-        <div className="pointer-events-none absolute inset-x-0 -bottom-1 z-40 h-2 bg-white" />
       </section>
     </ShaderBackground>
   )

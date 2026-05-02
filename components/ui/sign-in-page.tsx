@@ -30,6 +30,16 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen w-screen items-center justify-center bg-slate-100 p-6">
       <div className="relative flex h-[80vh] w-full max-w-6xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
+        <div className="relative flex-1 overflow-hidden bg-slate-50">
+          <div className="absolute inset-0">
+            <img
+              src="/login%20img.png"
+              alt="Brand visual"
+              className="h-full w-full object-cover object-right"
+            />
+          </div>
+        </div>
+
       <div className="absolute top-5 left-5 z-20">
         <button
           onClick={() => router.push("/")}
@@ -112,7 +122,7 @@ export function LoginPage() {
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-black px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+              className="w-full rounded-xl bg-[#22223B] px-4 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-[#2563eb] hover:via-[#7c3aed] hover:to-[#ec4899] hover:text-white hover:shadow-[0_12px_34px_rgba(124,58,237,0.35)]"
             >
               Sign In
             </button>
@@ -163,16 +173,6 @@ export function LoginPage() {
               </button>
             </div>
           </form>
-        </div>
-      </div>
-
-      <div className="relative flex-1 overflow-hidden bg-slate-50">
-        <div className="absolute inset-0">
-          <img
-            src="/login%20img.png"
-            alt="Brand visual"
-            className="h-full w-full bg-slate-900 object-contain"
-          />
         </div>
       </div>
       </div>
