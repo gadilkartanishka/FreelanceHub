@@ -6,30 +6,30 @@ const IMPACT_STATS = [
   {
     value: "4.2hrs",
     label: "saved per week on average",
-    accent: "#2bb6a8",
+    accent: "#6f7bd2",
   },
   {
     value: "3,800+",
     label: "freelancers organised",
-    accent: "#7f66cc",
+    accent: "#7f89db",
   },
   {
     value: "£2.1M+",
     label: "in payments tracked",
-    accent: "#d26f8f",
+    accent: "#8b96e1",
   },
   {
     value: "98%",
     label: "deadlines met on time",
-    accent: "#d4943e",
+    accent: "#5d6bc9",
   },
 ]
 
 export function ImpactSection() {
   return (
-    <section className="bg-white py-16 lg:py-20">
+    <section className="bg-[#f8f9fd] py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12">
-        <div className="grid grid-cols-2 divide-y divide-gray-50 md:grid-cols-4 md:divide-x md:divide-y-0">
+        <div className="grid grid-cols-2 divide-y divide-[#e2e6f4] md:grid-cols-4 md:divide-x md:divide-y-0">
           {IMPACT_STATS.map((stat, index) => (
             <motion.div
               key={index}
@@ -48,7 +48,7 @@ export function ImpactSection() {
               >
                 {stat.value}
               </h2>
-              <p className="mt-2.5 text-[10px] font-bold uppercase tracking-[0.25em] text-[var(--color-navy)]/30">
+              <p className="mt-2.5 text-[10px] font-bold uppercase tracking-[0.25em] text-[#5a6274]">
                 {stat.label}
               </p>
             </motion.div>

@@ -17,12 +17,12 @@ const STEPS = [
     body: "Create your workspace in minutes and jump straight into a single dashboard built for freelance operations.",
     chip: "Quick onboarding",
     side: "Signup + Login",
-    accent: "#2bb6a8",
+    accent: "#6f7bd2",
     textPanel: "#ffffff",
-    visualPanel: "#e8f3f1",
-    chipBg: "#eaf8f6",
-    chipBorder: "#a9dcd6",
-    watermark: "#cde7e3",
+    visualPanel: "#edf0fb",
+    chipBg: "#f0f3ff",
+    chipBorder: "#cdd4f4",
+    watermark: "#d6ddf8",
   },
   {
     id: "02",
@@ -31,7 +31,7 @@ const STEPS = [
     body: "Set up your client list, active projects, and key deadlines so your work pipeline stays structured from day one.",
     chip: "Structured workflow",
     side: "Clients + Projects",
-    accent: "#7f66cc",
+    accent: "#7f89db",
     textPanel: "#f7f3ff",
     visualPanel: "#ede7ff",
     chipBg: "#efe9ff",
@@ -45,12 +45,12 @@ const STEPS = [
     body: "Handle project conversations, updates, and client portal visibility without chasing context across different apps.",
     chip: "Message with context",
     side: "Messages + Portal",
-    accent: "#d26f8f",
+    accent: "#8b96e1",
     textPanel: "#fff5f8",
-    visualPanel: "#ffeaf1",
-    chipBg: "#fff0f5",
-    chipBorder: "#f3bfd0",
-    watermark: "#f8d5e2",
+    visualPanel: "#eef1fc",
+    chipBg: "#f2f4ff",
+    chipBorder: "#d2d8f5",
+    watermark: "#d9def8",
   },
   {
     id: "04",
@@ -59,12 +59,12 @@ const STEPS = [
     body: "Monitor invoices, received payments, and upcoming tasks in one view so you always know what needs attention next.",
     chip: "Revenue + deadlines",
     side: "Payments + Tasks",
-    accent: "#d4943e",
+    accent: "#5d6bc9",
     textPanel: "#ffffff",
-    visualPanel: "#fff5dc",
-    chipBg: "#fff9ea",
-    chipBorder: "#f0ddb0",
-    watermark: "#f7e6bd",
+    visualPanel: "#eaf0fb",
+    chipBg: "#eff3ff",
+    chipBorder: "#cad2f0",
+    watermark: "#d3dbf7",
   },
 ]
 
@@ -110,7 +110,7 @@ function StepLayer({
   return (
     <motion.article
       style={{ y, scale, opacity, zIndex: index + 1 }}
-      className="absolute inset-0 mx-auto grid min-h-[470px] w-full max-w-[1040px] grid-cols-1 overflow-hidden rounded-[44px] border border-[#e0e2e6] bg-[#f8fafc] shadow-[0_10px_24px_rgba(34,34,59,0.08)] md:grid-cols-2"
+      className="absolute inset-0 mx-auto grid min-h-[470px] w-full max-w-[1040px] grid-cols-1 overflow-hidden rounded-[44px] border border-[#dfe4f3] bg-[#f8f9fd] shadow-[0_10px_24px_rgba(34,34,59,0.08)] md:grid-cols-2"
     >
       <div
         className={`flex flex-col justify-between gap-6 px-7 py-8 sm:px-10 sm:py-10 ${index % 2 === 1 ? "md:order-2 md:rounded-r-[44px]" : "md:rounded-l-[44px]"}`}
@@ -123,10 +123,10 @@ function StepLayer({
           >
             — {step.id}, {step.label}
           </p>
-          <h3 className="max-w-[16ch] text-3xl font-semibold leading-[1.1] text-[var(--color-slate-ink)] sm:text-4xl">
+          <h3 className="max-w-[16ch] text-3xl font-semibold leading-[1.1] text-[#22223b] sm:text-4xl">
             {step.title}
           </h3>
-          <p className="max-w-[34ch] text-base leading-[1.5] text-[var(--color-deep-graphite)]">
+          <p className="max-w-[34ch] text-base leading-[1.5] text-[#5a6274]">
             {step.body}
           </p>
         </div>
@@ -185,7 +185,7 @@ export function HowItWorksSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-[var(--color-white-canvas)]"
+      className="relative bg-[#f8f9fd]"
       style={{ height: `${STEPS.length * 92}vh` }}
     >
       <div className="sticky top-0 flex h-screen items-center px-4 py-8 sm:px-6 lg:px-10">

@@ -15,12 +15,12 @@ const POINTS = [
 
 export function RunningHeadlines() {
   const items = [...POINTS, ...POINTS, ...POINTS]
-  const separators = ["#2bb6a8", "#7f66cc", "#d26f8f", "#d4943e"]
+  const separators = ["#8f9be6", "#7e8ad9", "#a8b0e8", "#6e7aca"]
 
   return (
-    <section className="relative overflow-hidden border-y border-gray-50 bg-white py-6">
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32 bg-gradient-to-r from-white to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-32 bg-gradient-to-l from-white to-transparent" />
+    <section className="relative overflow-hidden border-y border-[#dfe4f3] bg-[#f8f9fd] py-6">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32 bg-gradient-to-r from-[#f8f9fd] to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-32 bg-gradient-to-l from-[#f8f9fd] to-transparent" />
 
       <motion.div
         className="flex w-max items-center gap-12"
@@ -29,7 +29,7 @@ export function RunningHeadlines() {
       >
         {items.map((point, idx) => (
           <div key={`${point}-${idx}`} className="flex items-center gap-12">
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] whitespace-nowrap text-[var(--color-navy)]/40">
+            <span className="text-[10px] font-bold whitespace-nowrap uppercase tracking-[0.3em] text-[#5a6274]">
               {point}
             </span>
             <span 
