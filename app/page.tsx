@@ -1,9 +1,18 @@
-import { Footer } from "@/components/landing/footer"
 import { HeroSection } from "@/components/landing/hero-section"
-import { ImpactSection } from "@/components/landing/impact-section"
 import { HowItWorksSection } from "@/components/landing/how-it-works-section"
-import { KineticTextSection } from "@/components/landing/kinetic-text-section"
 import { RunningHeadlines } from "@/components/landing/running-headlines"
+import { ImpactSection } from "@/components/landing/impact-section"
+import {
+  FeaturesSection,
+  FaqSection,
+  PricingSection,
+} from "@/components/landing/more-sections"
+import {
+  BuiltForSection,
+  GradientCtaSection,
+  NewFooterSection,
+  TestimonialsSection,
+} from "@/components/landing/refined-sections"
 
 export default function Page() {
   return (
@@ -11,19 +20,20 @@ export default function Page() {
       <section id="home" className="scroll-mt-24">
         <HeroSection />
       </section>
+      <FeaturesSection />
+      <BuiltForSection />
       <section id="how-it-works" className="scroll-mt-24">
-        <KineticTextSection />
+        <HowItWorksSection />
       </section>
       <section id="platforms" className="scroll-mt-24">
         <RunningHeadlines />
       </section>
-      <section id="referrals" className="scroll-mt-24">
-        <HowItWorksSection />
-      </section>
+      <TestimonialsSection />
       <ImpactSection />
-      <section id="faq" className="scroll-mt-24">
-        <Footer />
-      </section>
+      <PricingSection />
+      <FaqSection />
+      <GradientCtaSection />
+      <NewFooterSection />
     </main>
   )
 }
