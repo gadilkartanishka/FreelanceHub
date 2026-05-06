@@ -5,6 +5,7 @@
 :root {
   --font-sans: "Clash Display", sans-serif;
   --font-heading: "Clash Display", sans-serif;
+  --font-display: "Iowan Old Style", "Baskerville", "Times New Roman", serif;
   --font-mono: "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
   --color-navy:   #22223B;
   --color-indigo: #4A4E69;
@@ -137,4 +138,58 @@
     @apply font-sans;
     scroll-behavior: smooth;
     }
+}
+
+@layer utilities {
+  .bg-paper { background-color: #f8f9fd; }
+  .bg-cloud { background-color: #eef1fa; }
+  .text-ink { color: #22223b; }
+  .text-ink-soft { color: #5a6274; }
+  .text-lavender-deep { color: #636dc2; }
+  .font-display { font-family: var(--font-display); }
+  .bg-gradient-hero {
+    background: linear-gradient(180deg, #cfd4eb 0%, #66739f 60%, #4f5d86 100%);
+  }
+  .bg-gradient-accent {
+    background: linear-gradient(135deg, #98a4ea, #6f7bd2);
+  }
+  .shadow-soft {
+    box-shadow: 0 1px 2px rgba(34, 34, 59, 0.04), 0 8px 24px -8px rgba(34, 34, 59, 0.08);
+  }
+  .shadow-float {
+    box-shadow: 0 20px 60px -20px rgba(34, 34, 59, 0.18), 0 8px 20px -10px rgba(34, 34, 59, 0.1);
+  }
+  .shadow-3d {
+    box-shadow: 0 30px 80px -30px rgba(88, 104, 177, 0.35), 0 10px 30px -15px rgba(88, 104, 177, 0.2);
+  }
+  .orb {
+    border-radius: 9999px;
+    background: radial-gradient(circle at 30% 25%, #ffffff, #d8ddff 35%, #97a3e7 75%, #6c78b3 100%);
+  }
+  .orb-soft {
+    border-radius: 9999px;
+    background: radial-gradient(circle at 30% 25%, #ffffff, #eef1ff 55%, #c4caeb 100%);
+  }
+  .tilt-card { transform: perspective(1400px) rotateX(8deg) rotateY(-10deg); }
+  .tilt-card-r { transform: perspective(1400px) rotateX(8deg) rotateY(10deg); }
+  .bg-grid {
+    background-image: linear-gradient(rgba(99, 109, 194, 0.09) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 109, 194, 0.09) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .mask-fade-edges {
+    mask-image: radial-gradient(ellipse at center, #000 55%, transparent 90%);
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 55%, transparent 90%);
+  }
+  @keyframes float-y {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+  }
+  .animate-float { animation: float-y 7s ease-in-out infinite; }
+  .animate-float-slow { animation: float-y 11s ease-in-out infinite; }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.03); }
+  }
+  .animate-pulse-soft { animation: pulse-soft 5s ease-in-out infinite; }
 }
