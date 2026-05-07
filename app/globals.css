@@ -192,4 +192,38 @@
     50% { opacity: 1; transform: scale(1.03); }
   }
   .animate-pulse-soft { animation: pulse-soft 5s ease-in-out infinite; }
+  @keyframes drift-x {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(14px); }
+  }
+  .animate-drift-x { animation: drift-x 8s ease-in-out infinite; }
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .animate-spin-slow { animation: spin-slow 18s linear infinite; }
+  @keyframes shimmer {
+    0% { transform: translateX(-120%); opacity: 0; }
+    18% { opacity: 0.3; }
+    50% { opacity: 0.55; }
+    82% { opacity: 0.3; }
+    100% { transform: translateX(120%); opacity: 0; }
+  }
+  .animate-shimmer { animation: shimmer 4.5s ease-in-out infinite; }
+  @keyframes glow {
+    0%, 100% { opacity: 0.45; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.06); }
+  }
+  .animate-glow { animation: glow 6s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-float,
+    .animate-float-slow,
+    .animate-pulse-soft,
+    .animate-drift-x,
+    .animate-spin-slow,
+    .animate-shimmer,
+    .animate-glow {
+      animation: none !important;
+    }
+  }
 }
