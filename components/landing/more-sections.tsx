@@ -1,6 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useSpring,
+  useTransform,
+  MotionValue,
+} from "framer-motion"
 
 const features = [
   {
@@ -126,41 +134,146 @@ const faqs = [
   },
 ]
 
-export function FeaturesSection() {
+function FeatureLayer({
+  feature,
+  index,
+  total,
+  progress,
+}: {
+  feature: (typeof features)[number]
+  index: number
+  total: number
+  progress: MotionValue<number>
+}) {
+  const enterStart = Math.max(0, (index - 1) / total)
+  const enterEnd = index / total
+  const coverStart = index / total
+  const coverEnd = Math.min(1, (index + 1) / total)
+
+  const y =
+    index === 0
+      ? useTransform(progress, [0, 1], ["0%", "0%"])
+      : useTransform(progress, [0, enterStart, enterEnd, 1], ["100%", "100%", "0%", "0%"])
+
+  const scale =
+    index === total - 1
+      ? useTransform(progress, [0, 1], [1, 1])
+      : useTransform(progress, [0, coverStart, coverEnd, 1], [1, 1, 0.95, 0.95])
+
+  const opacity =
+    index === total - 1
+      ? useTransform(progress, [0, 1], [1, 1])
+      : useTransform(progress, [0, coverStart, coverEnd, 1], [1, 1, 0.88, 0.88])
+
+  const featureId = String(index + 1).padStart(2, "0")
+  const ringLayouts = [
+    { x: "-28%", y: "-18%", size: "140%" },
+    { x: "58%", y: "-26%", size: "118%" },
+    { x: "-24%", y: "44%", size: "124%" },
+    { x: "60%", y: "38%", size: "132%" },
+    { x: "8%", y: "-34%", size: "128%" },
+    { x: "44%", y: "-8%", size: "128%" },
+  ]
+  const ring = ringLayouts[index % ringLayouts.length]
+  const ringColor = "111, 123, 210"
+  const isSixthCard = index % ringLayouts.length === 5
+
   return (
-    <section id="features" className="relative bg-cloud/40 py-28">
-      <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-12">
-        <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
-          <div className="max-w-xl">
-            <span className="inline-flex items-center rounded-full border border-border bg-white px-3 py-1 text-[11px] font-medium text-ink-soft">
-              Everything in one place
-            </span>
-            <h2 className="mt-4 font-display text-4xl text-ink sm:text-5xl">
-              The tools you'd cobble together — finally combined.
-            </h2>
+    <motion.article
+      style={{ y, scale, opacity, zIndex: index + 1 }}
+      className="absolute inset-0 mx-auto grid min-h-[470px] w-full max-w-[1040px] grid-cols-1 overflow-hidden rounded-[44px] border border-[#dfe4f3] bg-[#f8f9fd] shadow-[0_10px_24px_rgba(34,34,59,0.08)] md:grid-cols-2"
+    >
+      <div
+        className={`flex flex-col justify-between gap-6 px-7 py-8 sm:px-10 sm:py-10 ${index % 2 === 1 ? "md:order-2 md:rounded-r-[44px]" : "md:rounded-l-[44px]"}`}
+      >
+        <div className="space-y-7">
+          <p className="text-sm font-semibold tracking-[0.2em] text-[#6f7bd2]">
+            - {featureId}, FEATURE
+          </p>
+          <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-accent text-white shadow-soft">
+            {feature.icon}
           </div>
-          <p className="max-w-md text-ink-soft">
-            No more spreadsheets, scattered chats, screenshots in your gallery, or invoice files lost
-            in email. Just one calm workspace.
+          <h3 className="max-w-[16ch] text-3xl font-semibold leading-[1.1] text-[#22223b] sm:text-4xl">
+            {feature.title}
+          </h3>
+          <p className="max-w-[34ch] text-base leading-[1.5] text-[#5a6274]">
+            {feature.body}
           </p>
         </div>
 
-        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f) => (
-            <div
-              key={f.title}
-              className="group relative overflow-hidden rounded-3xl border border-border bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-float"
-            >
-              <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-accent text-white shadow-soft">
-                  {f.icon}
-                </span>
-                <h3 className="text-base font-semibold text-ink">{f.title}</h3>
-              </div>
-              <p className="mt-4 text-sm leading-relaxed text-ink-soft">{f.body}</p>
-              <div className="orb-soft pointer-events-none absolute -right-10 -bottom-10 h-32 w-32 opacity-0 transition group-hover:opacity-60" />
-            </div>
-          ))}
+        <span className="inline-flex w-fit items-center rounded-full border border-[#cdd4f4] bg-[#f0f3ff] px-5 py-2.5 text-base font-semibold text-[#6f7bd2]">
+          FreelanceHub feature
+        </span>
+      </div>
+
+      <div
+        className={`relative flex items-center justify-center overflow-hidden ${index % 2 === 1 ? "md:order-1 md:rounded-l-[44px]" : "md:rounded-r-[44px]"}`}
+        style={{ backgroundColor: "#edf0fb" }}
+      >
+        <div
+          className={`pointer-events-none absolute rounded-full ${isSixthCard ? "opacity-90" : "opacity-75"}`}
+          style={{
+            left: ring.x,
+            top: ring.y,
+            width: ring.size,
+            height: ring.size,
+            backgroundImage:
+              `repeating-radial-gradient(circle, rgba(${ringColor},0.24) 0 2px, rgba(${ringColor},0) 2px 15px)`,
+          }}
+        />
+        <div
+          className={`pointer-events-none absolute rounded-full ${isSixthCard ? "opacity-55" : "opacity-45"}`}
+          style={{
+            left: `calc(${ring.x} + 10%)`,
+            top: `calc(${ring.y} + 8%)`,
+            width: "82%",
+            height: "82%",
+            backgroundImage:
+              `repeating-radial-gradient(circle, rgba(${ringColor},0.2) 0 1.5px, rgba(${ringColor},0) 1.5px 12px)`,
+          }}
+        />
+        <span className="pointer-events-none absolute -bottom-8 right-4 text-[180px] font-semibold leading-none text-[#d6ddf8]">
+          {featureId}
+        </span>
+      </div>
+    </motion.article>
+  )
+}
+
+export function FeaturesSection() {
+  const sectionRef = useRef<HTMLElement | null>(null)
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  })
+
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 30,
+    mass: 0.35,
+  })
+
+  return (
+    <section
+      id="features"
+      ref={sectionRef}
+      className="relative bg-[#f8f9fd]"
+      style={{ height: `${features.length * 92}vh` }}
+    >
+      <div className="sticky top-0 flex h-screen items-center px-4 py-8 sm:px-6 lg:px-10">
+        <div className="mx-auto w-full max-w-[1120px]">
+          <div className="relative min-h-[470px] overflow-hidden rounded-[44px]">
+            {features.map((feature, index) => (
+              <FeatureLayer
+                key={feature.title}
+                feature={feature}
+                index={index}
+                total={features.length}
+                progress={smoothProgress}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -182,9 +295,14 @@ export function PricingSection() {
         </div>
 
         <div className="mt-14 grid gap-5 md:grid-cols-3">
-          {tiers.map((t) => (
-            <div
+          {tiers.map((t, index) => (
+            <motion.div
               key={t.name}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -8, scale: 1.01 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.75, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
               className={`relative rounded-3xl border p-7 transition ${
                 t.highlight
                   ? "border-[#7f89db] bg-[linear-gradient(180deg,#7f89db_0%,#6674cc_100%)] text-white shadow-3d"
@@ -195,6 +313,9 @@ export function PricingSection() {
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-accent px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow-float">
                   Most popular
                 </span>
+              )}
+              {t.highlight && (
+                <span className="pointer-events-none absolute inset-0 rounded-3xl border border-white/30 animate-glow" />
               )}
               <p className={`text-sm font-semibold ${t.highlight ? "text-white/80" : "text-ink-soft"}`}>
                 {t.name}
@@ -224,15 +345,15 @@ export function PricingSection() {
 
               <a
                 href="#"
-                className={`mt-7 inline-flex w-full items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium transition ${
+                className={`mt-7 inline-flex w-full items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-[#2563eb] hover:via-[#7c3aed] hover:to-[#ec4899] hover:text-white hover:shadow-[0_12px_34px_rgba(124,58,237,0.45)] ${
                   t.highlight
-                    ? "bg-white text-ink hover:opacity-90"
-                    : "bg-ink text-white hover:opacity-90"
+                    ? "bg-white text-ink"
+                    : "bg-ink text-white"
                 }`}
               >
                 {t.cta}
               </a>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -259,8 +380,12 @@ export function FaqSection() {
           {faqs.map((f, i) => {
             const isOpen = open === i
             return (
-              <div
+              <motion.div
                 key={f.q}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.35 }}
+                transition={{ duration: 0.55, delay: i * 0.07 }}
                 className="overflow-hidden rounded-2xl border border-border bg-white shadow-soft"
               >
                 <button
@@ -278,12 +403,23 @@ export function FaqSection() {
                     </svg>
                   </span>
                 </button>
-                {isOpen && (
-                  <div className="border-t border-border px-5 py-4 text-sm leading-relaxed text-ink-soft">
-                    {f.a}
-                  </div>
-                )}
-              </div>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="answer"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="border-t border-border px-5 py-4 text-sm leading-relaxed text-ink-soft">
+                        {f.a}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             )
           })}
         </div>
