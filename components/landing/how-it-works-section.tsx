@@ -1,209 +1,144 @@
 "use client"
 
-import {
-  motion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "framer-motion"
-import { MotionValue } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef } from "react"
+import { KeyRound, FolderKanban, MessagesSquare, Receipt } from "lucide-react"
 
-const STEPS = [
+type Step = {
+  icon: typeof KeyRound
+  index: string
+  kicker: string
+  title: string
+  body: string
+}
+
+const steps: Step[] = [
   {
-    id: "01",
-    label: "ACCESS",
+    icon: KeyRound,
+    index: "01",
+    kicker: "Access",
     title: "Sign up or log in",
-    body: "Create your workspace in minutes and jump straight into a single dashboard built for freelance operations.",
-    chip: "Quick onboarding",
-    side: "Signup + Login",
-    accent: "#6f7bd2",
-    textPanel: "#ffffff",
-    visualPanel: "#edf0fb",
-    chipBg: "#f0f3ff",
-    chipBorder: "#cdd4f4",
-    watermark: "#d6ddf8",
+    body: "Create your workspace and land in a freelance-ops dashboard.",
   },
   {
-    id: "02",
-    label: "ORGANIZE",
+    icon: FolderKanban,
+    index: "02",
+    kicker: "Organize",
     title: "Add clients and projects",
-    body: "Set up your client list, active projects, and key deadlines so your work pipeline stays structured from day one.",
-    chip: "Structured workflow",
-    side: "Clients + Projects",
-    accent: "#7f89db",
-    textPanel: "#f7f3ff",
-    visualPanel: "#ede7ff",
-    chipBg: "#efe9ff",
-    chipBorder: "#cfc0f8",
-    watermark: "#dbd1fb",
+    body: "Set up clients, active projects, and deadlines in one structure.",
   },
   {
-    id: "03",
-    label: "COLLABORATE",
+    icon: MessagesSquare,
+    index: "03",
+    kicker: "Collaborate",
     title: "Manage communication in one place",
-    body: "Handle project conversations, updates, and client portal visibility without chasing context across different apps.",
-    chip: "Message with context",
-    side: "Messages + Portal",
-    accent: "#8b96e1",
-    textPanel: "#fff5f8",
-    visualPanel: "#eef1fc",
-    chipBg: "#f2f4ff",
-    chipBorder: "#d2d8f5",
-    watermark: "#d9def8",
+    body: "Handle project conversations and client portal visibility without context switching.",
   },
   {
-    id: "04",
-    label: "DELIVER",
+    icon: Receipt,
+    index: "04",
+    kicker: "Deliver",
     title: "Track payments and stay ahead",
-    body: "Monitor invoices, received payments, and upcoming tasks in one view so you always know what needs attention next.",
-    chip: "Revenue + deadlines",
-    side: "Payments + Tasks",
-    accent: "#5d6bc9",
-    textPanel: "#ffffff",
-    visualPanel: "#eaf0fb",
-    chipBg: "#eff3ff",
-    chipBorder: "#cad2f0",
-    watermark: "#d3dbf7",
+    body: "Monitor invoices, received payments, and upcoming tasks from one view.",
   },
 ]
 
-function StepLayer({
-  step,
-  index,
-  total,
-  progress,
-}: {
-  step: (typeof STEPS)[number]
-  index: number
-  total: number
-  progress: MotionValue<number>
-}) {
-  const enterStart = Math.max(0, (index - 1) / total)
-  const enterEnd = index / total
-  const coverStart = index / total
-  const coverEnd = Math.min(1, (index + 1) / total)
-
-  const y =
-    index === 0
-      ? useTransform(progress, [0, 1], ["0%", "0%"])
-      : useTransform(
-          progress,
-          [0, enterStart, enterEnd, 1],
-          ["100%", "100%", "0%", "0%"]
-        )
-
-  const scale =
-    index === total - 1
-      ? useTransform(progress, [0, 1], [1, 1])
-      : useTransform(progress, [0, coverStart, coverEnd, 1], [1, 1, 0.95, 0.95])
-
-  const opacity =
-    index === total - 1
-      ? useTransform(progress, [0, 1], [1, 1])
-      : useTransform(
-          progress,
-          [0, coverStart, coverEnd, 1],
-          [1, 1, 0.88, 0.88]
-        )
-
+export function HowItWorksSection() {
   return (
-    <motion.article
-      style={{ y, scale, opacity, zIndex: index + 1 }}
-      className="absolute inset-0 mx-auto grid min-h-[470px] w-full max-w-[1040px] grid-cols-1 overflow-hidden rounded-[44px] border border-[#dfe4f3] bg-[#f8f9fd] shadow-[0_10px_24px_rgba(34,34,59,0.08)] md:grid-cols-2"
-    >
-      <div
-        className={`flex flex-col justify-between gap-6 px-7 py-8 sm:px-10 sm:py-10 ${index % 2 === 1 ? "md:order-2 md:rounded-r-[44px]" : "md:rounded-l-[44px]"}`}
-        style={{ backgroundColor: "#ffffff" }}
-      >
-        <div className="space-y-7">
-          <p
-            className="text-sm font-semibold tracking-[0.2em]"
-            style={{ color: step.accent }}
-          >
-            — {step.id}, {step.label}
-          </p>
-          <h3 className="max-w-[16ch] text-3xl font-semibold leading-[1.1] text-[#22223b] sm:text-4xl">
-            {step.title}
-          </h3>
-          <p className="max-w-[34ch] text-base leading-[1.5] text-[#5a6274]">
-            {step.body}
-          </p>
-        </div>
+    <section id="how-it-works" className="relative overflow-hidden bg-[#f8f9fd] px-6 py-28 sm:px-10 lg:px-16">
+      <div className="mx-auto max-w-7xl">
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="mx-auto max-w-2xl text-center font-display text-3xl leading-tight text-[#22223b] sm:text-4xl lg:text-5xl"
+        >
+          How it works
+        </motion.h2>
 
-        <span
-          className="inline-flex w-fit items-center rounded-full border px-5 py-2.5 text-base font-semibold"
-          style={{
-            borderColor: step.chipBorder,
-            backgroundColor: step.chipBg,
-            color: step.accent,
-          }}
-        >
-          {step.chip}
-        </span>
+        <StepRail />
       </div>
-
-      <div
-        className={`relative flex items-center justify-center overflow-hidden ${index % 2 === 1 ? "md:order-1 md:rounded-l-[44px]" : "md:rounded-r-[44px]"}`}
-        style={{ backgroundColor: step.visualPanel }}
-      >
-        <span
-          className="inline-flex items-center rounded-full border px-7 py-2.5 text-2xl font-semibold tracking-[0.08em]"
-          style={{
-            borderColor: step.chipBorder,
-            backgroundColor: step.chipBg,
-            color: step.accent,
-          }}
-        >
-          {step.side}
-        </span>
-        <span
-          className="pointer-events-none absolute -bottom-8 right-4 text-[180px] font-semibold leading-none"
-          style={{ color: step.watermark }}
-        >
-          {step.id}
-        </span>
-      </div>
-    </motion.article>
+    </section>
   )
 }
 
-export function HowItWorksSection() {
-  const sectionRef = useRef<HTMLElement | null>(null)
-
+function StepRail() {
+  const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
+    target: ref,
+    offset: ["start 80%", "end 20%"],
   })
-
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 30,
-    mass: 0.35,
-  })
+  const railHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"])
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative bg-[#f8f9fd]"
-      style={{ height: `${STEPS.length * 92}vh` }}
-    >
-      <div className="sticky top-0 flex h-screen items-center px-4 py-8 sm:px-6 lg:px-10">
-        <div className="mx-auto w-full max-w-[1120px]">
-          <div className="relative min-h-[470px] overflow-hidden rounded-[44px]">
-            {STEPS.map((step, index) => (
-              <StepLayer
-                key={step.id}
-                step={step}
-                index={index}
-                total={STEPS.length}
-                progress={smoothProgress}
-              />
-            ))}
-          </div>
-        </div>
+    <div ref={ref} className="relative mt-16">
+      <div aria-hidden className="absolute left-4 top-0 hidden h-full w-px -translate-x-1/2 bg-[#d7dced] md:block lg:left-1/2" />
+      <motion.div
+        aria-hidden
+        className="absolute left-4 top-0 hidden w-px -translate-x-1/2 origin-top bg-[#6f7bd2] md:block lg:left-1/2"
+        style={{ height: railHeight }}
+      />
+
+      <div className="space-y-20 md:space-y-24">
+        {steps.map((s, i) => (
+          <StepRow key={s.title} step={s} index={i} />
+        ))}
       </div>
-    </section>
+    </div>
+  )
+}
+
+function StepRow({ step, index }: { step: Step; index: number }) {
+  const rowRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: rowRef,
+    offset: ["start 85%", "end 30%"],
+  })
+  const y = useTransform(scrollYProgress, [0, 1], [56, -30])
+  const opacity = useTransform(scrollYProgress, [0, 0.25, 0.85, 1], [0, 1, 1, 0.6])
+  const dot = useTransform(scrollYProgress, [0, 0.4, 1], [0.4, 1, 1])
+
+  const Icon = step.icon
+  const isLeft = index % 2 === 0
+
+  return (
+    <motion.div
+      ref={rowRef}
+      style={{ opacity }}
+      className="relative min-h-[150px] pl-12 md:min-h-[170px] md:pl-0"
+    >
+      <div className="absolute left-4 top-1 md:left-1/2 md:-translate-x-1/2">
+        <motion.div
+          style={{ scale: dot }}
+          className="relative z-10 grid h-8 w-8 place-items-center rounded-full text-[9px] font-medium tracking-[0.12em] text-white"
+        >
+          <span
+            className="absolute inset-0 rounded-full bg-[#6f7bd2]"
+            style={{
+              boxShadow: "0 8px 18px -10px rgba(111,123,210,0.75), inset 0 1px 0 rgba(255,255,255,0.35)",
+            }}
+          />
+          <span className="relative">{step.index}</span>
+        </motion.div>
+      </div>
+
+      <motion.div
+        style={{ y }}
+        className={`w-full md:w-[calc(50%-2rem)] ${isLeft ? "md:mr-auto md:pr-14 md:text-right" : "md:ml-auto md:pl-14 md:text-left"}`}
+      >
+        <div className={`${isLeft ? "md:ml-auto" : ""} max-w-xl`}>
+          <div className={`flex items-center gap-3 ${isLeft ? "md:justify-end" : "md:justify-start"}`}>
+            <Icon className="h-4 w-4 text-[#6f7bd2]" strokeWidth={1.6} />
+            <span className="text-[10px] uppercase tracking-[0.2em] text-[#5a6274]">
+              {step.index} - {step.kicker}
+            </span>
+          </div>
+          <h3 className="font-display mt-3 text-2xl leading-[1.1] text-[#22223b] md:text-3xl">{step.title}</h3>
+          <p className="mt-3 text-sm leading-relaxed text-[#5a6274] md:text-[15px]">{step.body}</p>
+        </div>
+      </motion.div>
+    </motion.div>
   )
 }
 
