@@ -11,6 +11,14 @@ export function Navbar() {
   const [user, setUser] = useState<any>(null)
   const [scrolled, setScrolled] = useState(false)
   const supabase = createClient()
+  const navItems = [
+    { label: "Home", href: "/#home" },
+    { label: "Features", href: "/#features" },
+    { label: "How it works", href: "/#how-it-works" },
+    { label: "Platforms", href: "/#platforms" },
+    { label: "Pricing", href: "/#pricing" },
+    { label: "FAQ", href: "/#faq" },
+  ]
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -42,21 +50,23 @@ export function Navbar() {
             scrolled ? "text-[#4A4E69]" : "text-white/75"
           }`}
         >
-          <Link href="#home" className={scrolled ? "text-[#22223B]" : "text-white"}>
-            Home
-          </Link>
-          <Link href="#how-it-works" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
-            How it works
-          </Link>
-          <Link href="#platforms" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
-            Platforms
-          </Link>
-          <Link href="#referrals" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
-            Referrals
-          </Link>
-          <Link href="#faq" className={`transition-colors ${scrolled ? "hover:text-[#22223B]" : "hover:text-white"}`}>
-            FAQ
-          </Link>
+          {navItems.map((item, index) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`transition-colors ${
+                index === 0
+                  ? scrolled
+                    ? "text-[#22223B]"
+                    : "text-white"
+                  : scrolled
+                    ? "hover:text-[#22223B]"
+                    : "hover:text-white"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
         </div>
 
         <div className="flex items-center gap-2 justify-self-end">
